@@ -1,7 +1,8 @@
-package com.example.food2you
+package com.example.food2you.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.food2you.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
