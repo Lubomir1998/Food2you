@@ -53,6 +53,7 @@ class Repository
         )
     }
 
+    fun getRestaurantsByType(type: String) = dao.getRestaurantsByType(type)
 
 
 

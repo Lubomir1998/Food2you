@@ -22,4 +22,10 @@ class RestaurantsViewModel
     val allRestaurants = _allRestaurants
 
 
+    var filteredRestaurants: LiveData<List<Restaurant>> = MutableLiveData()
+
+    fun filter(type: String) {
+        filteredRestaurants = repository.getRestaurantsByType(type)
+    }
+
 }

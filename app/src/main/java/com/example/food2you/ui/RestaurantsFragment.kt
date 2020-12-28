@@ -27,6 +27,8 @@ private const val TAG = "RestaurantsFragment"
 @AndroidEntryPoint
 class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
+    private var currentList: List<Restaurant>? = null
+    private var chipList = mutableListOf<String>()
     private lateinit var binding: RestaurantsFragmentBinding
     private val viewModel: RestaurantsViewModel by viewModels()
     private lateinit var restaurantAdapter: RestaurantAdapter
@@ -60,7 +62,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
 
         binding.chipGroup.setOnCheckedChangeListener { group, checkedId ->
-
+            Log.d(TAG, "******* checkId = $checkedId")
 
             if(checkedId != -1) {
 
@@ -74,6 +76,14 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
                 val chip = group.getChildAt(checkedId - 1) as Chip?
                 chip?.isSelected = true
                 chip?.isChecked = false
+
+                if(chip?.text.toString() != "All") {
+                    viewModel.filter(chip?.text.toString())
+                    subscribeFilterLiveData()
+                }
+                else {
+                    displayData(currentList!!)
+                }
 
             }
 
@@ -95,6 +105,11 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
     }
 
 
+    private fun subscribeFilterLiveData() {
+        viewModel.filteredRestaurants.observe(viewLifecycleOwner, {
+            displayData(it)
+        })
+    }
 
     @SuppressLint("SetTextI18n")
     private fun subscribeToObservers() {
@@ -105,14 +120,20 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
                 when(result.status) {
                     Status.SUCCESS -> {
                         displayData(result.data!!)
-
+                        currentList = result.data
 
                         binding.orderTextView.text = "Order from ${result.data.size} restaurants"
 
                         addChip("All")
+                        chipList.clear()
 
                         for(restaurant in result.data) {
-                            addChip(restaurant.type)
+                            val exists = chipList.contains(restaurant.type)
+                            chipList.add(restaurant.type)
+                            if(!exists) {
+                                addChip(restaurant.type)
+                            }
+
                         }
 
                         val firstChip = binding.chipGroup.getChildAt(0) as Chip?
