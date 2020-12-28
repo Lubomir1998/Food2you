@@ -6,5 +6,18 @@
     <fragment
         android:id="@+id/restaurantsFragment"
         android:name="com.example.food2you.ui.RestaurantsFragment"
-        android:label="RestaurantsFragment" />
+        android:label="RestaurantsFragment" >
+        <action
+            android:id="@+id/action_restaurantsFragment_to_detailRestaurantFragment"
+            app:destination="@id/detailRestaurantFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailRestaurantFragment"
+        android:name="com.example.food2you.ui.DetailRestaurantFragment"
+        android:label="DetailRestaurantFragment" >
+        <argument
+            android:name="restaurantId"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
 </navigation>

@@ -22,6 +22,9 @@ interface ApiService {
     @POST("/dislikeRestaurant")
     suspend fun dislikeRestaurant(@Body likeRestaurantRequest: LikeRestaurantRequest): Response<SimpleResponse>
 
+    @GET("/getRestaurantByType/{type}")
+    suspend fun getResByType(@Path("type") type: String): Response<List<Restaurant>>
+
     @GET("/getFood/{restaurant}")
     suspend fun getFoodForRestaurant(@Path("restaurant") restaurant: String): Response<ResponseBody>
 

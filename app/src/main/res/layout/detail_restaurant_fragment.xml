@@ -16,18 +16,18 @@
         <ImageView
             android:id="@+id/resImg"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="140dp"
             android:scaleType="centerCrop"
+            android:src="@drawable/detail"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@drawable/ic_launcher_background" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/restaurantLogoImg"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginTop="60dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="100dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -38,13 +38,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="16dp"
             android:textColor="@color/black"
             android:textSize="28sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/restaurantLogoImg"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/resImg"
+            app:layout_constraintTop_toBottomOf="@+id/restaurantLogoImg"
             tools:text="Mc donaldsb nu iooiiboib" />
 
         <ImageView
