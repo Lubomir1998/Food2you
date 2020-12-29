@@ -10,16 +10,18 @@
 
     <TextView
         android:id="@+id/nameTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        tools:text="Margaritta"
-        android:textSize="22sp"
+        android:layout_marginEnd="12dp"
         android:textColor="@color/black"
+        android:textSize="22sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/foodImg"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Margaritta" />
 
     <TextView
         android:id="@+id/descriptionTextView"
@@ -50,8 +52,8 @@
 
     <ImageView
         android:id="@+id/foodImg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"

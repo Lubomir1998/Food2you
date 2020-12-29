@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.food2you.Repository
+import com.example.food2you.data.local.entities.Food
 import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.other.Event
 import com.example.food2you.other.Resource
@@ -25,6 +26,28 @@ class DetailRestaurantViewModel
         res?.let {
             _restaurant.postValue(Event(Resource.success(it)))
         } ?: _restaurant.postValue(Event(Resource.error("Restaurant not found", null)))
+    }
+
+
+    private var _foodList = MutableLiveData<Event<Resource<List<Food>>>>()
+    val foodList: LiveData<Event<Resource<List<Food>>>> = _foodList
+
+
+    fun getFood(restaurant: String) = viewModelScope.launch {
+        _foodList.postValue(Event(Resource.loading(null)))
+
+        val result = repository.getFoodForRestaurant(restaurant)
+
+        result?.let {
+            _foodList.postValue(Event(Resource.success(it)))
+        } ?: _foodList.postValue(Event(Resource.error("Unknown error occurred", null)))
+    }
+
+
+    var filteredFood: LiveData<List<Food>> = MutableLiveData()
+
+    fun filter(type: String) {
+        filteredFood = repository.getFoodByType(type)
     }
 
 

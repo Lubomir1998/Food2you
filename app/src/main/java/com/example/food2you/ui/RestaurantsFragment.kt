@@ -59,11 +59,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
         subscribeToObservers()
 
-
-
         binding.chipGroup.setOnCheckedChangeListener { group, checkedId ->
-            Log.d(TAG, "******* checkId = $checkedId")
-
             if(checkedId != -1) {
 
                 for (i in 0 until group.childCount) {
@@ -119,12 +115,15 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
                 when(result.status) {
                     Status.SUCCESS -> {
+                        binding.progressBar.visibility = View.GONE
                         displayData(result.data!!)
                         currentList = result.data
 
                         binding.orderTextView.text = "Order from ${result.data.size} restaurants"
 
+                        binding.chipGroup.removeAllViews()
                         addChip("All")
+
                         chipList.clear()
 
                         for(restaurant in result.data) {
@@ -141,6 +140,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
                     }
                     Status.ERROR -> {
+                        binding.progressBar.visibility = View.GONE
                         event.getContentIfNotHandled()?.let { error ->
                             error.message?.let { message ->
                                 Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show()
@@ -148,7 +148,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
                         }
                     }
                     Status.LOADING -> {
-
+                        binding.progressBar.visibility = View.VISIBLE
                     }
                 }
 

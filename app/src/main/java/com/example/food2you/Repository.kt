@@ -1,7 +1,11 @@
 package com.example.food2you
 
 import android.app.Application
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.food2you.data.local.ResDao
+import com.example.food2you.data.local.entities.Food
 import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.data.remote.ApiService
 import com.example.food2you.other.Resource
@@ -20,6 +24,7 @@ class Repository
 
     suspend fun getRestaurantById(id: String) = dao.getRestaurantById(id)
 
+    private suspend fun insertFood(food: Food) = dao.insertFood(food)
 
     private var currentResponse: Response<List<Restaurant>>? = null
 
@@ -55,6 +60,29 @@ class Repository
 
     fun getRestaurantsByType(type: String) = dao.getRestaurantsByType(type)
 
+    fun getFoodByType(type: String) = dao.getFoodByType(type)
+
+//    fun getFoodForRestaurant(restaurant: String) = dao.getFoodForRestaurant(restaurant)
+
+    suspend fun getFoodForRestaurant(restaurant: String): List<Food>? {
+        val result = try {
+            api.getFoodForRestaurant(restaurant)
+        } catch (e: Exception) {
+            null
+        }
+
+
+        result?.let { response ->
+            response.body()?.let {
+                dao.deleteAllFood()
+                it.forEach {
+                    insertFood(it)
+                }
+            }
+        }
+
+        return dao.getFoodForRestaurant(restaurant)
+    }
 
 
 }

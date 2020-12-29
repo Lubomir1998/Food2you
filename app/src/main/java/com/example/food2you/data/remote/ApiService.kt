@@ -1,5 +1,6 @@
 package com.example.food2you.data.remote
 
+import com.example.food2you.data.local.entities.Food
 import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.data.remote.requests.AddPreviewRequest
 import com.example.food2you.data.remote.requests.LikeRestaurantRequest
@@ -26,7 +27,7 @@ interface ApiService {
     suspend fun getResByType(@Path("type") type: String): Response<List<Restaurant>>
 
     @GET("/getFood/{restaurant}")
-    suspend fun getFoodForRestaurant(@Path("restaurant") restaurant: String): Response<ResponseBody>
+    suspend fun getFoodForRestaurant(@Path("restaurant") restaurant: String): Response<List<Food>>
 
     @POST("/addPreview")
     suspend fun addReview(@Body addPreviewRequest: AddPreviewRequest): Response<SimpleResponse>
