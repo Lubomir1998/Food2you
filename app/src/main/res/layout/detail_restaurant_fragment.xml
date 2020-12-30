@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:layout_height="match_parent">
+
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/orange"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,9 +44,9 @@
         <ImageView
             android:id="@+id/resImg"
             android:layout_width="match_parent"
-            android:layout_height="140dp"
+            android:layout_height="200dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/detail"
+            android:src="@drawable/detail_res"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -27,7 +55,7 @@
             android:id="@+id/restaurantLogoImg"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="170dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -62,33 +90,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="139dp"
-            tools:text="120 reviews"
-            android:textSize="20sp"
+            android:layout_marginTop="8dp"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/titleTextView"
+            tools:text="120 reviews" />
 
         <HorizontalScrollView
             android:id="@+id/horizontalScroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:background="#F3F3F3"
             android:scrollbars="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@id/reviewsTextView">
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroup"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:chipSpacingHorizontal="10dp"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
-                app:singleSelection="true"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                app:chipSpacingHorizontal="10dp"
                 app:layout_constraintTop_toBottomOf="@+id/imageView"
-                app:singleLine="true">
+                app:singleLine="true"
+                app:singleSelection="true">
 
             </com.google.android.material.chip.ChipGroup>
 
@@ -120,5 +149,8 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+        </androidx.core.widget.NestedScrollView>
 
-</androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

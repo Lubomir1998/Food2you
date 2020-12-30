@@ -47,6 +47,8 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.toolbar.title = "Food 2 you"
+
         listener = object : RestaurantAdapter.OnRestaurantClickListener {
             override fun onRestaurantClicked(restaurant: Restaurant) {
                 val action = RestaurantsFragmentDirections.actionRestaurantsFragmentToDetailRestaurantFragment(restaurant.id)
@@ -86,7 +88,10 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
         }
 
-
+        binding.swipeRefresh.setOnRefreshListener {
+            subscribeToObservers()
+            binding.swipeRefresh.isRefreshing = false
+        }
 
 
     }
@@ -145,6 +150,9 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
                             error.message?.let { message ->
                                 Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show()
                             }
+                        }
+                        result.data?.let {
+                            displayData(it)
                         }
                     }
                     Status.LOADING -> {

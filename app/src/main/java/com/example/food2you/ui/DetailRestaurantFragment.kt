@@ -51,6 +51,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+//        (activity as MainActivity?)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         foodAdapter = FoodAdapter(listOf(), requireContext())
         setUpRecyclerView()
@@ -82,6 +83,14 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                     displayData(currentList!!)
                 }
 
+            }
+        }
+
+        binding.swipeRefresh.setOnRefreshListener {
+            if(args.restaurantId.isNotEmpty()) {
+                viewModel.getRestaurantById(args.restaurantId)
+                subscribeToObservers()
+                binding.swipeRefresh.isRefreshing = false
             }
         }
 
@@ -158,6 +167,9 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                             error.message?.let { message ->
                                 Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show()
                             }
+                        }
+                        result.data?.let {
+                            displayData(it)
                         }
                     }
                     Status.LOADING -> {
