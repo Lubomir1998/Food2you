@@ -3,9 +3,7 @@ package com.example.food2you.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -43,6 +41,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         binding = DetailRestaurantFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -50,8 +49,6 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        (activity as MainActivity?)?.setSupportActionBar(binding.toolbar)
 
         (activity as MainActivity?)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -110,7 +107,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                     Status.SUCCESS -> {
                         currentRestaurant = result.data
 
-                        binding.toolbar.title = currentRestaurant!!.name
+                        (activity as MainActivity).supportActionBar?.title = currentRestaurant!!.name
 
                         binding.titleTextView.text = currentRestaurant!!.name
                         binding.reviewsTextView.text = "${currentRestaurant!!.previews.size} reviews"
@@ -213,6 +210,21 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
         chip.setChipBackgroundColorResource(R.drawable.chip_color)
         chip.isCheckable = true
         binding.chipGroup.addView(chip)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.detail_restaurant_toolbar, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.likeRestaurant -> {
+
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
 }

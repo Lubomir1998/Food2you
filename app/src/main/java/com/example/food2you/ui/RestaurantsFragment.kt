@@ -44,12 +44,13 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
     }
 
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as MainActivity?)?.setSupportActionBar(binding.toolbar)
+//        (activity as MainActivity?)?.setSupportActionBar(requireView().findViewById(R.id.toolbar))
 
-        binding.toolbar.title = "Food 2 you"
+        (activity as MainActivity).supportActionBar?.title = "Food 2 you"
 
         listener = object : RestaurantAdapter.OnRestaurantClickListener {
             override fun onRestaurantClicked(restaurant: Restaurant) {
