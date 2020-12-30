@@ -51,7 +51,10 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        (activity as MainActivity?)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as MainActivity?)?.setSupportActionBar(binding.toolbar)
+
+        (activity as MainActivity?)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
 
         foodAdapter = FoodAdapter(listOf(), requireContext())
         setUpRecyclerView()
@@ -106,6 +109,8 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         currentRestaurant = result.data
+
+                        binding.toolbar.title = currentRestaurant!!.name
 
                         binding.titleTextView.text = currentRestaurant!!.name
                         binding.reviewsTextView.text = "${currentRestaurant!!.previews.size} reviews"

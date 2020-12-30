@@ -3,10 +3,9 @@ package com.example.food2you.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
+import androidx.core.view.marginEnd
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -39,6 +38,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         binding = RestaurantsFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -46,6 +46,8 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (activity as MainActivity?)?.setSupportActionBar(binding.toolbar)
 
         binding.toolbar.title = "Food 2 you"
 
@@ -180,6 +182,20 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
         binding.chipGroup.addView(chip)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.main_screen_toolbar, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.profileImg -> {
+
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
 
 
 }
