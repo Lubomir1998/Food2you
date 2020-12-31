@@ -2,16 +2,9 @@ package com.example.food2you.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.widget.Toolbar
-import androidx.core.view.marginEnd
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.food2you.R
@@ -159,6 +152,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
                     }
                     Status.LOADING -> {
                         binding.progressBar.visibility = View.VISIBLE
+                        binding.orderTextView.text = "Loading restaurants..."
                     }
                 }
 
@@ -182,20 +176,19 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
         binding.chipGroup.addView(chip)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.main_screen_toolbar, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
-            R.id.profileImg -> {
-
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
-    }
-
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        super.onCreateOptionsMenu(menu, inflater)
+//        inflater.inflate(R.menu.main_screen_toolbar, menu)
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        when(item.itemId) {
+//            R.id.profileImg -> {
+//
+//            }
+//        }
+//
+//        return super.onOptionsItemSelected(item)
+//    }
 
 }

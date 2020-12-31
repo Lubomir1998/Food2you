@@ -210,19 +210,19 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
         binding.chipGroup.addView(chip)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.detail_restaurant_toolbar, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
-            R.id.likeRestaurant -> {
-                Toast.makeText(requireContext(), "alalalallaal", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
-    }
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        super.onCreateOptionsMenu(menu, inflater)
+//        inflater.inflate(R.menu.detail_restaurant_toolbar, menu)
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        when(item.itemId) {
+//            R.id.likeRestaurant -> {
+//                Toast.makeText(requireContext(), "alalalallaal", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//
+//        return super.onOptionsItemSelected(item)
+//    }
 
 }
