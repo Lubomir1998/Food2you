@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -49,8 +51,6 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        (activity as MainActivity?)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
         foodAdapter = FoodAdapter(listOf(), requireContext())
@@ -106,8 +106,6 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         currentRestaurant = result.data
-
-                        (activity as MainActivity).supportActionBar?.title = currentRestaurant!!.name
 
                         binding.titleTextView.text = currentRestaurant!!.name
                         binding.reviewsTextView.text = "${currentRestaurant!!.previews.size} reviews"
@@ -220,7 +218,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.likeRestaurant -> {
-
+                Toast.makeText(requireContext(), "alalalallaal", Toast.LENGTH_SHORT).show()
             }
         }
 

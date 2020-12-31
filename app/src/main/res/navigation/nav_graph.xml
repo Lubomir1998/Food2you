@@ -6,7 +6,7 @@
     <fragment
         android:id="@+id/restaurantsFragment"
         android:name="com.example.food2you.ui.RestaurantsFragment"
-        android:label="RestaurantsFragment" >
+        android:label="Food 2 you" >
         <action
             android:id="@+id/action_restaurantsFragment_to_detailRestaurantFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -18,10 +18,14 @@
     <fragment
         android:id="@+id/detailRestaurantFragment"
         android:name="com.example.food2you.ui.DetailRestaurantFragment"
-        android:label="DetailRestaurantFragment" >
+        android:label="{restaurantName}" >
         <argument
             android:name="restaurantId"
             android:defaultValue=""
             app:argType="string" />
+        <argument
+            android:name="restaurantName"
+            app:argType="string"
+            android:defaultValue=""/>
     </fragment>
 </navigation>

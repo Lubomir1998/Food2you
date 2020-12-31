@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.marginEnd
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -48,13 +51,9 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        (activity as MainActivity?)?.setSupportActionBar(requireView().findViewById(R.id.toolbar))
-
-        (activity as MainActivity).supportActionBar?.title = "Food 2 you"
-
         listener = object : RestaurantAdapter.OnRestaurantClickListener {
             override fun onRestaurantClicked(restaurant: Restaurant) {
-                val action = RestaurantsFragmentDirections.actionRestaurantsFragmentToDetailRestaurantFragment(restaurant.id)
+                val action = RestaurantsFragmentDirections.actionRestaurantsFragmentToDetailRestaurantFragment(restaurant.id, restaurant.name)
                 findNavController().navigate(action)
             }
         }
