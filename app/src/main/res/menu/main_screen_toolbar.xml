@@ -4,11 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools">
 
         <item
+            android:icon="@drawable/like_img"
+            android:id="@+id/likeImg"
+            app:showAsAction="always"
+            android:title="" />
+
+        <item
             android:icon="@drawable/profile_img"
             android:id="@+id/profileImg"
             app:showAsAction="always"
             android:title="" />
-
-
 
 </menu>
