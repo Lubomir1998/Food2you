@@ -12,7 +12,6 @@ import com.example.food2you.R
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
@@ -34,10 +33,11 @@ class MainActivity : AppCompatActivity() {
         toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.likeImg -> {
-                    Toast.makeText(this, "like", Toast.LENGTH_SHORT).show()
+                    navController.navigate(R.id.action_launch_fav_restaurants_fragment)
                 }
                 R.id.profileImg -> {
-                    Toast.makeText(this, "profile", Toast.LENGTH_SHORT).show()
+                    // if is logged in go to my account fragment
+                    // else go to auth fragment
                 }
             }
 

@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
     app:startDestination="@id/restaurantsFragment">
+
+    <action
+        android:id="@+id/action_launch_fav_restaurants_fragment"
+        app:destination="@+id/favRestaurantsFragment"
+        app:launchSingleTop="true"
+        />
+
+    <action
+        android:id="@+id/action_launch_auth_fragment"
+        app:destination="@+id/authFragment"
+        app:launchSingleTop="true"
+        />
+
+    <action
+        android:id="@+id/action_launch_my_account_fragment"
+        app:destination="@+id/myAccountFragment"
+        app:launchSingleTop="true"
+        />
 
     <fragment
         android:id="@+id/restaurantsFragment"
@@ -28,4 +48,16 @@
             app:argType="string"
             android:defaultValue=""/>
     </fragment>
+    <fragment
+        android:id="@+id/favRestaurantsFragment"
+        android:name="com.example.food2you.ui.FavRestaurantsFragment"
+        android:label="Favourite restaurants" />
+    <fragment
+        android:id="@+id/authFragment"
+        android:name="com.example.food2you.ui.AuthFragment"
+        android:label="Sign in" />
+    <fragment
+        android:id="@+id/myAccountFragment"
+        android:name="com.example.food2you.ui.MyAccountFragment"
+        android:label="My Account" />
 </navigation>
