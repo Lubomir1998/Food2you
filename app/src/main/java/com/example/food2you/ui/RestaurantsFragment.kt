@@ -14,8 +14,10 @@ import com.example.food2you.adapters.RestaurantAdapter
 import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.databinding.ActivityMainBinding
 import com.example.food2you.databinding.RestaurantsFragmentBinding
+import com.example.food2you.other.BasicAuthInterceptor
 import com.example.food2you.other.Constants
 import com.example.food2you.other.Constants.KEY_EMAIL
+import com.example.food2you.other.Constants.KEY_PASSWORD
 import com.example.food2you.other.Status
 import com.example.food2you.viewmodels.RestaurantsViewModel
 import com.google.android.material.chip.Chip
@@ -36,6 +38,8 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
     private lateinit var listener: RestaurantAdapter.OnRestaurantClickListener
     @Inject
     lateinit var sharedPrefs: SharedPreferences
+    @Inject
+    lateinit var baseAuthInterceptor: BasicAuthInterceptor
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +55,13 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
+        val password = sharedPrefs.getString(KEY_PASSWORD, "") ?: ""
+
+        if(email.isNotEmpty() && password.isNotEmpty()) {
+            authenticateApi(email, password)
+        }
 
         listener = object : RestaurantAdapter.OnRestaurantClickListener {
             override fun onRestaurantClicked(restaurant: Restaurant) {
@@ -182,6 +193,11 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
         chip.setChipBackgroundColorResource(R.drawable.chip_color)
         chip.isCheckable = true
         binding.chipGroup.addView(chip)
+    }
+
+    private fun authenticateApi(email: String, password: String) {
+        baseAuthInterceptor.email = email
+        baseAuthInterceptor.password = password
     }
 
 //    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
