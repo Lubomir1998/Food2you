@@ -92,8 +92,12 @@ class AuthFragment: Fragment(R.layout.auth_fragment) {
                             .apply()
 
                         authenticateApi(currentEmail ?: "", currentPassword ?: "")
+
+                        binding.etRegisterEmail.text?.clear()
+                        binding.etRegisterPassword.text?.clear()
+                        binding.etRegisterPasswordConfirm.text?.clear()
+
                         showSnackBar(result.data ?: "Successfully created an account")
-                        findNavController().navigate(R.id.action_launch_main_fragment)
                     }
                     Status.ERROR -> {
                         binding.registerProgressBar.visibility = View.GONE
@@ -119,8 +123,7 @@ class AuthFragment: Fragment(R.layout.auth_fragment) {
                             .apply()
 
                         authenticateApi(currentEmail ?: "", currentPassword ?: "")
-
-//                        findNavController().navigate(R.id.action_launch_main_fragment)
+                        showSnackBar(result.data ?: "Successfully logged in")
                         startActivity(Intent(requireContext(), MainActivity::class.java))
                     }
                     Status.ERROR -> {
