@@ -1,10 +1,7 @@
 package com.example.food2you.viewmodels
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.food2you.Repository
 import com.example.food2you.data.local.entities.Food
 import com.example.food2you.data.local.entities.Restaurant
@@ -14,6 +11,17 @@ import kotlinx.coroutines.launch
 
 class DetailRestaurantViewModel
 @ViewModelInject constructor(private val repository: Repository): ViewModel() {
+
+
+    private val _forceUpdate = MutableLiveData<Boolean>(false)
+
+    private val _allRestaurants = _forceUpdate.switchMap {
+        repository.getAllRestaurants().asLiveData(viewModelScope.coroutineContext)
+    }.switchMap {
+        MutableLiveData(Event(it))
+    }
+
+    val allRestaurants = _allRestaurants
 
 
     private val _restaurant = MutableLiveData<Event<Resource<Restaurant>>>()
@@ -48,6 +56,26 @@ class DetailRestaurantViewModel
 
     fun filter(type: String) {
         filteredFood = repository.getFoodByType(type)
+    }
+
+
+    private val _likeStatus = MutableLiveData<Event<Resource<String>>>()
+    val likeStatus: LiveData<Event<Resource<String>>> = _likeStatus
+
+    private val _dislikeStatus = MutableLiveData<Event<Resource<String>>>()
+    val dislikeStatus: LiveData<Event<Resource<String>>> = _dislikeStatus
+
+
+    fun likeRestaurant(restaurantId: String, email: String) = viewModelScope.launch {
+        val result = repository.likeRestaurant(restaurantId, email)
+
+        _likeStatus.postValue(Event(result))
+    }
+
+    fun dislikeRestaurant(restaurantId: String, email: String) = viewModelScope.launch {
+        val result = repository.dislikeRestaurant(restaurantId, email)
+
+        _dislikeStatus.postValue(Event(result))
     }
 
 

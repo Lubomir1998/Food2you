@@ -28,4 +28,12 @@ class RestaurantsViewModel
         filteredRestaurants = repository.getRestaurantsByType(type)
     }
 
+    var likedRestaurants: LiveData<List<Restaurant>> = MutableLiveData()
+
+    fun getLikedRestaurants(email: String) {
+        likedRestaurants = repository.getLikedRestaurants(email)
+    }
+
+
+
 }

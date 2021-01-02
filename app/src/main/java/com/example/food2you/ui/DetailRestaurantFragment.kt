@@ -1,6 +1,7 @@
 package com.example.food2you.ui
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -18,12 +19,14 @@ import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.databinding.ActivityMainBinding.inflate
 import com.example.food2you.databinding.DetailRestaurantFragmentBinding
 import com.example.food2you.databinding.RestaurantsFragmentBinding
+import com.example.food2you.other.Constants.KEY_EMAIL
 import com.example.food2you.other.Status
 import com.example.food2you.viewmodels.DetailRestaurantViewModel
 import com.example.food2you.viewmodels.RestaurantsViewModel
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 private const val TAG = "DetailRestaurantFragmen"
 
@@ -38,6 +41,8 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
     private var chipList = mutableListOf<String>()
     private var currentList: List<Food>? = null
 
+    @Inject lateinit var sharedPrefs: SharedPreferences
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,6 +56,9 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
+
 
 
         foodAdapter = FoodAdapter(listOf(), requireContext())
@@ -94,11 +102,58 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
             }
         }
 
+        binding.favButton.setOnClickListener {
+
+            if(email.isNotEmpty()) {
+                if (currentRestaurant?.users?.contains(email) == true) {
+                    viewModel.dislikeRestaurant(
+                        args.restaurantId,
+                        sharedPrefs.getString(KEY_EMAIL, "") ?: ""
+                    )
+                    subscribeToLikeObservers()
+                } else {
+                    viewModel.likeRestaurant(
+                        args.restaurantId,
+                        sharedPrefs.getString(KEY_EMAIL, "") ?: ""
+                    )
+                    subscribeToLikeObservers()
+                }
+            }
+            else {
+                Snackbar.make(requireView(), "Sign in first", Snackbar.LENGTH_LONG).show()
+            }
+
+        }
+
     }
 
 
     @SuppressLint("SetTextI18n")
     private fun subscribeToObservers() {
+        viewModel.allRestaurants.observe(viewLifecycleOwner, {
+            it?.let { event ->
+                val result = event.peekContent()
+
+                when(result.status) {
+                    Status.SUCCESS -> {
+                        val list = result.data!!
+
+                        for(restaurant in list) {
+                            if(restaurant.id == args.restaurantId) {
+                                currentRestaurant = restaurant
+                            }
+                        }
+
+                    }
+                    Status.ERROR -> {
+                        Snackbar.make(requireView(), "Something went wrong", Snackbar.LENGTH_LONG).show()
+                    }
+                    Status.LOADING -> {}
+                }
+
+            }
+        })
+
         viewModel.restaurant.observe(viewLifecycleOwner, {
             it?.let { event ->
                 val result = event.peekContent()
@@ -106,6 +161,16 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         currentRestaurant = result.data
+
+                        val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
+
+                        if(currentRestaurant!!.users.contains(email)) {
+                            binding.favButton.setImageResource(R.drawable.fav_img)
+                        }
+                        else {
+                            binding.favButton.setImageResource(R.drawable.not_fav_img)
+                        }
+
 
                         binding.titleTextView.text = currentRestaurant!!.name
                         binding.reviewsTextView.text = "${currentRestaurant!!.previews.size} reviews"
@@ -132,7 +197,6 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                 }
             }
         })
-
     }
 
     private fun subscribeToFoodList() {
@@ -210,19 +274,37 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
         binding.chipGroup.addView(chip)
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        super.onCreateOptionsMenu(menu, inflater)
-//        inflater.inflate(R.menu.detail_restaurant_toolbar, menu)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when(item.itemId) {
-//            R.id.likeRestaurant -> {
-//                Toast.makeText(requireContext(), "alalalallaal", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//
-//        return super.onOptionsItemSelected(item)
-//    }
+    private fun subscribeToLikeObservers() {
+        viewModel.likeStatus.observe(viewLifecycleOwner, { event ->
+            event?.getContentIfNotHandled()?.let { result ->
+                when(result.status) {
+                    Status.SUCCESS -> {
+                        Snackbar.make(requireView(), "Added to favourites", Snackbar.LENGTH_LONG).show()
+                        binding.favButton.setImageResource(R.drawable.fav_img)
+                    }
+                    Status.ERROR -> {
+                        Snackbar.make(requireView(), "Something went wrong", Snackbar.LENGTH_LONG).show()
+                    }
+                    Status.LOADING -> {}
+                }
+            }
+        })
+
+        viewModel.dislikeStatus.observe(viewLifecycleOwner, { event ->
+            event?.getContentIfNotHandled()?.let { result ->
+                when(result.status) {
+                    Status.SUCCESS -> {
+                        Snackbar.make(requireView(), "Removed from favourites", Snackbar.LENGTH_LONG).show()
+                        binding.favButton.setImageResource(R.drawable.not_fav_img)
+                    }
+                    Status.ERROR -> {
+                        Snackbar.make(requireView(), "Something went wrong", Snackbar.LENGTH_LONG).show()
+                    }
+                    Status.LOADING -> {}
+                }
+            }
+        })
+
+    }
 
 }

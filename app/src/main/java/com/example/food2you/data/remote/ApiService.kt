@@ -2,6 +2,7 @@ package com.example.food2you.data.remote
 
 import com.example.food2you.data.local.entities.Food
 import com.example.food2you.data.local.entities.Restaurant
+import com.example.food2you.data.remote.requests.AccountRequest
 import com.example.food2you.data.remote.requests.AddPreviewRequest
 import com.example.food2you.data.remote.requests.LikeRestaurantRequest
 import com.example.food2you.data.remote.resoponses.SimpleResponse
@@ -14,6 +15,12 @@ import retrofit2.http.Path
 
 interface ApiService {
 
+    @POST("/registerUser")
+    suspend fun register(@Body request: AccountRequest): Response<SimpleResponse>
+
+    @POST("/login")
+    suspend fun login(@Body request: AccountRequest): Response<SimpleResponse>
+
     @GET("/getAllRestaurants")
     suspend fun getAllRestaurants(): Response<List<Restaurant>>
 
@@ -23,8 +30,8 @@ interface ApiService {
     @POST("/dislikeRestaurant")
     suspend fun dislikeRestaurant(@Body likeRestaurantRequest: LikeRestaurantRequest): Response<SimpleResponse>
 
-    @GET("/getRestaurantByType/{type}")
-    suspend fun getResByType(@Path("type") type: String): Response<List<Restaurant>>
+//    @GET("/getRestaurantByType/{type}")
+//    suspend fun getResByType(@Path("type") type: String): Response<List<Restaurant>>
 
     @GET("/getFood/{restaurant}")
     suspend fun getFoodForRestaurant(@Path("restaurant") restaurant: String): Response<List<Food>>

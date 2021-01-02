@@ -23,8 +23,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
+            app:subtitleTextAppearance="@style/ToolbarSubtitleTheme"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
 
     </com.google.android.material.appbar.AppBarLayout>
 

@@ -1,8 +1,10 @@
 package com.example.food2you.ui
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
+import android.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -10,12 +12,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.food2you.R
 import com.example.food2you.adapters.RestaurantAdapter
 import com.example.food2you.data.local.entities.Restaurant
+import com.example.food2you.databinding.ActivityMainBinding
 import com.example.food2you.databinding.RestaurantsFragmentBinding
+import com.example.food2you.other.Constants
+import com.example.food2you.other.Constants.KEY_EMAIL
 import com.example.food2you.other.Status
 import com.example.food2you.viewmodels.RestaurantsViewModel
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 private const val TAG = "RestaurantsFragment"
 
@@ -28,6 +34,8 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
     private val viewModel: RestaurantsViewModel by viewModels()
     private lateinit var restaurantAdapter: RestaurantAdapter
     private lateinit var listener: RestaurantAdapter.OnRestaurantClickListener
+    @Inject
+    lateinit var sharedPrefs: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater,

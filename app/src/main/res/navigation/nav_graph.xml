@@ -18,6 +18,12 @@
         />
 
     <action
+        android:id="@+id/action_launch_main_fragment"
+        app:destination="@+id/restaurantsFragment"
+        app:launchSingleTop="true"
+        />
+
+    <action
         android:id="@+id/action_launch_my_account_fragment"
         app:destination="@+id/myAccountFragment"
         app:launchSingleTop="true"
@@ -51,7 +57,14 @@
     <fragment
         android:id="@+id/favRestaurantsFragment"
         android:name="com.example.food2you.ui.FavRestaurantsFragment"
-        android:label="Favourite restaurants" />
+        android:label="Favourite restaurants" >
+        <action
+            android:id="@+id/action_favRestaurantsFragment_to_restaurantsFragment"
+            app:destination="@id/restaurantsFragment" />
+        <action
+            android:id="@+id/action_favRestaurantsFragment_to_detailRestaurantFragment"
+            app:destination="@id/detailRestaurantFragment" />
+    </fragment>
     <fragment
         android:id="@+id/authFragment"
         android:name="com.example.food2you.ui.AuthFragment"

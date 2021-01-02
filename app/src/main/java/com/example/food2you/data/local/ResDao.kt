@@ -25,6 +25,9 @@ interface ResDao {
     @Query("SELECT * FROM food WHERE restaurantName = :restaurant")
     suspend fun getFoodForRestaurant(restaurant: String): List<Food>?
 
+    @Query("SELECT * FROM restaurant WHERE :email in (users)")
+    fun getLikedRestaurants(email: String): LiveData<List<Restaurant>>
+
     @Query("SELECT * FROM restaurant WHERE type = :type")
     fun getRestaurantsByType(type: String): LiveData<List<Restaurant>>
 

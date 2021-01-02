@@ -7,4 +7,6 @@ object Constants {
     const val KEY_EMAIL = "KEY_EMAIL"
     const val KEY_PASSWORD = "KEY_PASSWORD"
 
+    const val KEY_ADDRESS = "KEY_ADDRESS"
+
 }
