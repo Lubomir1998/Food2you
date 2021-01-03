@@ -155,9 +155,10 @@ class Repository
                     insertRestaurant(it)
                 }
             }
+            return dao._getAllRestaurants()
         }
 
-        return dao._getAllRestaurants()
+        return null
     }
 
     suspend fun allRestaurants(): List<Restaurant>? {

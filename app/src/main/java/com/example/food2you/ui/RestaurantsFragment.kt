@@ -75,12 +75,8 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
         restaurantAdapter = RestaurantAdapter(listOf(), requireContext(), listener)
         setupRecyclerView()
 
-//        subscribeToObservers()
-
-//        if(!observed) {
-            viewModel.getAllRestaurants()
-            subscribeToOtherObserver()
-//        }
+        viewModel.getAllRestaurants()
+        subscribeToOtherObserver()
 
         binding.chipGroup.setOnCheckedChangeListener { group, checkedId ->
             if(checkedId != -1) {

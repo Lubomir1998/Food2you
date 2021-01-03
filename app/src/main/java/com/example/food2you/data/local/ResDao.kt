@@ -1,7 +1,6 @@
 package com.example.food2you.data.local
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -27,7 +26,6 @@ interface ResDao {
 
     @Query("SELECT * FROM food WHERE restaurantName = :restaurant")
     suspend fun getFoodForRestaurant(restaurant: String): List<Food>?
-
 
     @Query("SELECT * FROM restaurant WHERE type = :type")
     fun getRestaurantsByType(type: String): LiveData<List<Restaurant>>

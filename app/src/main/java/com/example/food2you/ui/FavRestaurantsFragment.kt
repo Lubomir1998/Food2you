@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.food2you.R
 import com.example.food2you.adapters.RestaurantAdapter
 import com.example.food2you.data.local.entities.Restaurant
-import com.example.food2you.databinding.AuthFragmentBinding
 import com.example.food2you.databinding.FavRestaurantsFragmentBinding
 import com.example.food2you.other.Constants.KEY_EMAIL
 import com.example.food2you.other.Status
@@ -86,7 +85,6 @@ class FavRestaurantsFragment: Fragment(R.layout.auth_fragment) {
 
     private fun subscribeToObservers() {
         viewModel.favouriteRestaurants.observe(viewLifecycleOwner, {
-            Log.d(TAG, "*****favresobs: ")
             it?.let { event ->
                 val result = event.peekContent()
 
@@ -138,12 +136,6 @@ class FavRestaurantsFragment: Fragment(R.layout.auth_fragment) {
 
         })
 
-//        viewModel.allRestaurants.observe(viewLifecycleOwner, {
-//            Log.d(TAG, "*****allresobs: ")
-//            favList?.let {
-//                displayData(it)
-//            }
-//        })
     }
 
     private fun displayData(list: List<Restaurant>) {
