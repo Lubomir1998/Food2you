@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 class RestaurantsViewModel
 @ViewModelInject constructor(private val repository: Repository): ViewModel(){
 
-    private val _forceUpdate = MutableLiveData<Boolean>(false)
+    private val _forceUpdate = MutableLiveData(true)
 
     private val _allRestaurants = _forceUpdate.switchMap {
         repository.getAllRestaurants().asLiveData(viewModelScope.coroutineContext)
@@ -28,10 +28,39 @@ class RestaurantsViewModel
         filteredRestaurants = repository.getRestaurantsByType(type)
     }
 
-    var likedRestaurants: LiveData<List<Restaurant>> = MutableLiveData()
 
-    fun getLikedRestaurants(email: String) {
-        likedRestaurants = repository.getLikedRestaurants(email)
+    private val _favouriteRestaurants: MutableLiveData<Event<Resource<List<Restaurant>>>> = MutableLiveData()
+
+    val favouriteRestaurants: LiveData<Event<Resource<List<Restaurant>>>> = _favouriteRestaurants
+
+    fun getFavouriteRestaurants() {
+        viewModelScope.launch {
+            _favouriteRestaurants.postValue(Event(Resource.loading(null)))
+
+            val result = repository.getFavouriteRestaurants()
+
+            result?.let {
+                _favouriteRestaurants.postValue(Event((Resource.success(it))))
+            } ?: _favouriteRestaurants.postValue(Event(Resource.error("Unknown error occurred", null)))
+
+        }
+    }
+
+    private val _allRes: MutableLiveData<Event<Resource<List<Restaurant>>>> = MutableLiveData()
+
+    val allRes: LiveData<Event<Resource<List<Restaurant>>>> = _allRes
+
+    fun getAllRestaurants() {
+        viewModelScope.launch {
+            _allRes.postValue(Event(Resource.loading(null)))
+
+            val result = repository.allRestaurants()
+
+            result?.let {
+                _allRes.postValue(Event((Resource.success(it))))
+            } ?: _allRes.postValue(Event(Resource.error("Unknown error occurred", null)))
+
+        }
     }
 
 

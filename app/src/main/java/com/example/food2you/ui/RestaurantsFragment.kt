@@ -41,6 +41,8 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
     @Inject
     lateinit var baseAuthInterceptor: BasicAuthInterceptor
 
+    var observed = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -73,7 +75,12 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
         restaurantAdapter = RestaurantAdapter(listOf(), requireContext(), listener)
         setupRecyclerView()
 
-        subscribeToObservers()
+//        subscribeToObservers()
+
+//        if(!observed) {
+            viewModel.getAllRestaurants()
+            subscribeToOtherObserver()
+//        }
 
         binding.chipGroup.setOnCheckedChangeListener { group, checkedId ->
             if(checkedId != -1) {
@@ -129,6 +136,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
     @SuppressLint("SetTextI18n")
     private fun subscribeToObservers() {
         viewModel.allRestaurants.observe(viewLifecycleOwner, {
+            observed = true
             it?.let { event ->
                 val result = event.peekContent()
 
@@ -200,19 +208,60 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
         baseAuthInterceptor.password = password
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        super.onCreateOptionsMenu(menu, inflater)
-//        inflater.inflate(R.menu.main_screen_toolbar, menu)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when(item.itemId) {
-//            R.id.profileImg -> {
-//
-//            }
-//        }
-//
-//        return super.onOptionsItemSelected(item)
-//    }
+    private fun subscribeToOtherObserver() {
+        viewModel.allRes.observe(viewLifecycleOwner, {
+            it?.let { event ->
+                val result = event.peekContent()
+
+                when(result.status) {
+                    Status.SUCCESS -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.recyclerView.visibility = View.VISIBLE
+                        displayData(result.data!!)
+                        currentList = result.data
+
+                        binding.orderTextView.text = "Order from ${result.data.size} restaurants"
+
+                        binding.chipGroup.removeAllViews()
+                        addChip("All")
+
+                        chipList.clear()
+
+                        for(restaurant in result.data) {
+                            val exists = chipList.contains(restaurant.type)
+                            chipList.add(restaurant.type)
+                            if(!exists) {
+                                addChip(restaurant.type)
+                            }
+
+                        }
+
+                        val firstChip = binding.chipGroup.getChildAt(0) as Chip?
+                        firstChip?.isSelected = true
+
+                    }
+                    Status.ERROR -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.recyclerView.visibility = View.VISIBLE
+                        event.getContentIfNotHandled()?.let { error ->
+                            error.message?.let { message ->
+                                Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show()
+                            }
+                        }
+                        result.data?.let {
+                            displayData(it)
+                        }
+                    }
+                    Status.LOADING -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.recyclerView.visibility = View.GONE
+                        binding.orderTextView.text = "Loading restaurants..."
+                    }
+                }
+
+
+            }
+        })
+    }
 
 }

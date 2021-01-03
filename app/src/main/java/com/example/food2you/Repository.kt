@@ -1,9 +1,6 @@
 package com.example.food2you
 
 import android.app.Application
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.food2you.data.local.ResDao
 import com.example.food2you.data.local.entities.Food
 import com.example.food2you.data.local.entities.Restaurant
@@ -25,7 +22,6 @@ class Repository
     private val api: ApiService,
     private val context: Application
 ){
-
 
     suspend fun register(email: String, password: String) = withContext(Dispatchers.IO) {
         try{
@@ -91,6 +87,7 @@ class Repository
         )
     }
 
+
     suspend fun likeRestaurant(restaurantId: String, user: String) = withContext(Dispatchers.IO) {
         val response = api.likeRestaurant(LikeRestaurantRequest(restaurantId, user))
 
@@ -144,7 +141,43 @@ class Repository
 
     fun getFoodByType(type: String) = dao.getFoodByType(type)
 
-    fun getLikedRestaurants(email: String) = dao.getLikedRestaurants(email)
+    suspend fun getFavouriteRestaurants(): List<Restaurant>? {
+        val result = try {
+            api.getFavouriteRestaurants()
+        } catch (e: Exception) {
+            null
+        }
+
+        result?.let { response ->
+            response.body()?.let { restaurants ->
+                dao.deleteAllRestaurants()
+                restaurants.forEach {
+                    insertRestaurant(it)
+                }
+            }
+        }
+
+        return dao._getAllRestaurants()
+    }
+
+    suspend fun allRestaurants(): List<Restaurant>? {
+        val result = try {
+            api.getAllRestaurants()
+        } catch (e: Exception) {
+            null
+        }
+
+        result?.let { response ->
+            response.body()?.let { restaurants ->
+                dao.deleteAllRestaurants()
+                restaurants.forEach {
+                    insertRestaurant(it)
+                }
+            }
+        }
+
+        return dao._getAllRestaurants()
+    }
 
     suspend fun getFoodForRestaurant(restaurant: String): List<Food>? {
         val result = try {

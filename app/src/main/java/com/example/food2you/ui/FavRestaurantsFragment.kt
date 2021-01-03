@@ -2,6 +2,7 @@ package com.example.food2you.ui
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,8 @@ import com.example.food2you.viewmodels.RestaurantsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+private const val TAG = "FavRestaurantsFragment"
+
 @AndroidEntryPoint
 class FavRestaurantsFragment: Fragment(R.layout.auth_fragment) {
 
@@ -27,6 +30,7 @@ class FavRestaurantsFragment: Fragment(R.layout.auth_fragment) {
     private val viewModel: RestaurantsViewModel by viewModels()
     private lateinit var restaurantAdapter: RestaurantAdapter
     private lateinit var listener: RestaurantAdapter.OnRestaurantClickListener
+    private var favList: List<Restaurant>? = null
     @Inject
     lateinit var sharedPrefs: SharedPreferences
 
@@ -43,7 +47,6 @@ class FavRestaurantsFragment: Fragment(R.layout.auth_fragment) {
         super.onViewCreated(view, savedInstanceState)
 
 
-
         listener = object : RestaurantAdapter.OnRestaurantClickListener {
             override fun onRestaurantClicked(restaurant: Restaurant) {
                 val action = FavRestaurantsFragmentDirections.actionFavRestaurantsFragmentToDetailRestaurantFragment(restaurant.id, restaurant.name)
@@ -55,14 +58,19 @@ class FavRestaurantsFragment: Fragment(R.layout.auth_fragment) {
 
         val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
 
-        viewModel.getLikedRestaurants(email)
-
         if(email.isNotEmpty()) {
             setupRecyclerView()
+            viewModel.getFavouriteRestaurants()
             subscribeToObservers()
+        }
+        else {
+            binding.button.visibility = View.VISIBLE
+            binding.textView.visibility = View.VISIBLE
+            binding.imageView2.visibility = View.VISIBLE
         }
 
         binding.swipeRefresh.setOnRefreshListener {
+            viewModel.getFavouriteRestaurants()
             subscribeToObservers()
             binding.swipeRefresh.isRefreshing = false
         }
@@ -77,28 +85,65 @@ class FavRestaurantsFragment: Fragment(R.layout.auth_fragment) {
 
 
     private fun subscribeToObservers() {
-        viewModel.likedRestaurants.observe(viewLifecycleOwner, { list ->
+        viewModel.favouriteRestaurants.observe(viewLifecycleOwner, {
+            Log.d(TAG, "*****favresobs: ")
+            it?.let { event ->
+                val result = event.peekContent()
 
-            binding.progressBar3.visibility = View.GONE
+                when (result.status) {
+                    Status.SUCCESS -> {
+
+                        val list = result.data!!
+
+                        favList = list
+
+                        binding.progressBar3.visibility = View.GONE
 
 
-            if(list.isNotEmpty()) {
-                binding.button.visibility = View.GONE
-                binding.textView.visibility = View.GONE
-                binding.imageView2.visibility = View.GONE
+                        if (list.isNotEmpty()) {
+                            binding.button.visibility = View.GONE
+                            binding.textView.visibility = View.GONE
+                            binding.imageView2.visibility = View.GONE
 
-                binding.recyclerView.visibility = View.VISIBLE
+                            binding.recyclerView.visibility = View.VISIBLE
 
-                displayData(list)
+                            displayData(list)
+                        } else {
+                            binding.button.visibility = View.VISIBLE
+                            binding.textView.visibility = View.VISIBLE
+                            binding.imageView2.visibility = View.VISIBLE
+
+                            binding.recyclerView.visibility = View.GONE
+                        }
+                    }
+                    Status.ERROR -> {
+                        binding.progressBar3.visibility = View.GONE
+                        binding.button.visibility = View.VISIBLE
+                        binding.textView.visibility = View.VISIBLE
+                        binding.imageView2.visibility = View.VISIBLE
+
+                        binding.recyclerView.visibility = View.GONE
+                    }
+                    Status.LOADING -> {
+                        binding.progressBar3.visibility = View.VISIBLE
+                        binding.button.visibility = View.GONE
+                        binding.textView.visibility = View.GONE
+                        binding.imageView2.visibility = View.GONE
+
+                        binding.recyclerView.visibility = View.GONE
+                    }
+                }
+
             }
-            else {
-                binding.button.visibility = View.VISIBLE
-                binding.textView.visibility = View.VISIBLE
-                binding.imageView2.visibility = View.VISIBLE
 
-                binding.recyclerView.visibility = View.GONE
-            }
         })
+
+//        viewModel.allRestaurants.observe(viewLifecycleOwner, {
+//            Log.d(TAG, "*****allresobs: ")
+//            favList?.let {
+//                displayData(it)
+//            }
+//        })
     }
 
     private fun displayData(list: List<Restaurant>) {
