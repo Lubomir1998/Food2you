@@ -3,6 +3,7 @@ package com.example.food2you
 import android.app.Application
 import com.example.food2you.data.local.ResDao
 import com.example.food2you.data.local.entities.Food
+import com.example.food2you.data.remote.models.Order
 import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.data.remote.ApiService
 import com.example.food2you.data.remote.requests.AccountRequest
@@ -49,9 +50,23 @@ class Repository
         }
     }
 
+    suspend fun insertOrder(order: Order) = withContext(Dispatchers.IO) {
+        try {
+            val response = api.orderFood(order)
+            if(response.isSuccessful && response.body()!!.isSuccessful) {
+                Resource.success(response.body()?.message)
+            }
+            else {
+                Resource.error(response.body()?.message ?: response.message(), null)
+            }
+        } catch (e: Exception){
+            Resource.error("Couldn't connect to servers. Check your internet connection", null)
+        }
+    }
+
     suspend fun getRestaurantById(id: String) = dao.getRestaurantById(id)
 
-    suspend fun insertRestaurant(restaurant: Restaurant) = dao.insertRes(restaurant)
+    private suspend fun insertRestaurant(restaurant: Restaurant) = dao.insertRes(restaurant)
 
     private suspend fun insertFood(food: Food) = dao.insertFood(food)
 

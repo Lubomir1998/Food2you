@@ -1,12 +1,12 @@
 package com.example.food2you.data.remote
 
 import com.example.food2you.data.local.entities.Food
+import com.example.food2you.data.remote.models.Order
 import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.data.remote.requests.AccountRequest
 import com.example.food2you.data.remote.requests.AddPreviewRequest
 import com.example.food2you.data.remote.requests.LikeRestaurantRequest
 import com.example.food2you.data.remote.resoponses.SimpleResponse
-import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -38,5 +38,8 @@ interface ApiService {
 
     @POST("/addPreview")
     suspend fun addReview(@Body addPreviewRequest: AddPreviewRequest): Response<SimpleResponse>
+
+    @POST("/order")
+    suspend fun orderFood(@Body order: Order): Response<SimpleResponse>
 
 }

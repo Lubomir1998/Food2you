@@ -41,7 +41,6 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
     @Inject
     lateinit var baseAuthInterceptor: BasicAuthInterceptor
 
-    var observed = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -132,7 +131,6 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
     @SuppressLint("SetTextI18n")
     private fun subscribeToObservers() {
         viewModel.allRestaurants.observe(viewLifecycleOwner, {
-            observed = true
             it?.let { event ->
                 val result = event.peekContent()
 
@@ -204,6 +202,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
         baseAuthInterceptor.password = password
     }
 
+    @SuppressLint("SetTextI18n")
     private fun subscribeToOtherObserver() {
         viewModel.allRes.observe(viewLifecycleOwner, {
             it?.let { event ->

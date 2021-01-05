@@ -5,12 +5,51 @@ import androidx.lifecycle.*
 import com.example.food2you.Repository
 import com.example.food2you.data.local.entities.Food
 import com.example.food2you.data.local.entities.Restaurant
+import com.example.food2you.data.remote.models.FoodItem
 import com.example.food2you.other.Event
 import com.example.food2you.other.Resource
 import kotlinx.coroutines.launch
 
 class DetailRestaurantViewModel
 @ViewModelInject constructor(private val repository: Repository): ViewModel() {
+
+
+    var orderList = MutableLiveData<ArrayList<FoodItem>>(arrayListOf())
+    var _orderList = ArrayList<FoodItem>()
+
+    var orderPrice = MutableLiveData<Float>(0f)
+
+    fun increasePrice(price: Float) {
+        orderPrice.postValue(orderPrice.value?.plus(price))
+    }
+
+    private var list = arrayListOf<String>()
+//    var quantity = 1
+
+    fun addToList(item: FoodItem) {
+        orderList.postValue(orderList.value?.let {
+//
+//            for(food in orderList.value!!) {
+//                list.add(food.name)
+//            }
+//
+//            if(list.contains(item.name)) {
+//                quantity += 1
+//                it.remove(item)
+//                it.add(FoodItem(item.name, item.price * quantity, quantity))
+//                _orderList.add(FoodItem(item.name, item.price * quantity, quantity))
+//                it
+//            }
+//            else {
+//                quantity = 1
+                it.add(item)
+//                _orderList.add(item)
+                it
+//            }
+
+
+        })
+    }
 
 
     private val _forceUpdate = MutableLiveData<Boolean>(false)

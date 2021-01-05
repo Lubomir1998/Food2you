@@ -3,12 +3,12 @@ package com.example.food2you.ui
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
-import android.view.*
-import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -16,16 +16,17 @@ import com.example.food2you.R
 import com.example.food2you.adapters.FoodAdapter
 import com.example.food2you.data.local.entities.Food
 import com.example.food2you.data.local.entities.Restaurant
-import com.example.food2you.databinding.ActivityMainBinding.inflate
+import com.example.food2you.data.remote.models.FoodItem
+import com.example.food2you.data.remote.models.FoodItems
 import com.example.food2you.databinding.DetailRestaurantFragmentBinding
-import com.example.food2you.databinding.RestaurantsFragmentBinding
 import com.example.food2you.other.Constants.KEY_EMAIL
+import com.example.food2you.other.Constants.KEY_RESTAURANT
 import com.example.food2you.other.Status
 import com.example.food2you.viewmodels.DetailRestaurantViewModel
-import com.example.food2you.viewmodels.RestaurantsViewModel
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.math.RoundingMode
 import javax.inject.Inject
 
 private const val TAG = "DetailRestaurantFragmen"
@@ -38,8 +39,11 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
     private val args: DetailRestaurantFragmentArgs by navArgs()
     private var currentRestaurant: Restaurant? = null
     private lateinit var foodAdapter: FoodAdapter
+    private lateinit var listener: FoodAdapter.OnFoodClickListener
     private var chipList = mutableListOf<String>()
     private var currentList: List<Food>? = null
+    private var orderList: ArrayList<FoodItem> = arrayListOf()
+    private var orderPrice = 0f
 
     @Inject lateinit var sharedPrefs: SharedPreferences
 
@@ -48,25 +52,76 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setHasOptionsMenu(true)
         binding = DetailRestaurantFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
 
+        listener = object : FoodAdapter.OnFoodClickListener {
+            override fun onFoodClicked(food: Food) {
+                binding.orderBar.visibility = View.VISIBLE
+
+                val price = food.price
+                val foodName = food.name
+
+                viewModel.increasePrice(price)
+                viewModel.addToList(FoodItem(foodName, price))
+
+            }
+        }
+
+        viewModel.orderPrice.observe(viewLifecycleOwner, {
+            val floatPrice = it.toBigDecimal().setScale(2, RoundingMode.FLOOR).toFloat()
+            binding.orderPriceTextView.text = foodAdapter.formattedStringPrice(floatPrice.toString()) + " EUR"
+            orderPrice = it
+        })
 
 
-        foodAdapter = FoodAdapter(listOf(), requireContext())
+        viewModel.orderList.observe(viewLifecycleOwner, {
+            if(it.isNotEmpty()) {
+                binding.orderBar.visibility = View.VISIBLE
+            }
+            binding.foodQuantity.text = it.size.toString()
+            orderList = it
+        })
+
+
+        binding.orderBar.setOnClickListener {
+            val list = FoodItems().also {
+                it.addAll(orderList)
+            }
+            val action = DetailRestaurantFragmentDirections.actionDetailRestaurantFragmentToOrderFragment(
+                orderPrice,
+                list,
+                currentRestaurant!!.owner,
+                currentRestaurant!!.deliveryPrice,
+                currentRestaurant!!.minimalPrice,
+                currentRestaurant!!.name
+                )
+            findNavController().navigate(action)
+        }
+
+        foodAdapter = FoodAdapter(listOf(), requireContext(), listener)
         setUpRecyclerView()
 
         if(args.restaurantId.isNotEmpty()) {
             viewModel.getRestaurantById(args.restaurantId)
             subscribeToObservers()
+        }
+        else {
+            val sharedPrefId = sharedPrefs.getString(KEY_RESTAURANT, "") ?: ""
+            if(sharedPrefId.isNotEmpty()) {
+                viewModel.getRestaurantById(sharedPrefId)
+                subscribeToObservers()
+            }
         }
 
 
@@ -162,6 +217,8 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                     Status.SUCCESS -> {
                         currentRestaurant = result.data
 
+                        sharedPrefs.edit().putString(KEY_RESTAURANT, currentRestaurant!!.id).apply()
+
                         val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
 
                         if(currentRestaurant!!.users.contains(email)) {
@@ -211,6 +268,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                         displayData(list!!)
 
                         binding.chipGroup.removeAllViews()
+                        binding.chipGroup.clearCheck()
                         addChip("All")
 
                         chipList.clear()

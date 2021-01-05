@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide
 import com.example.food2you.data.local.entities.Food
 import com.example.food2you.databinding.FoodItemBinding
 
-class FoodAdapter(var listOfFood: List<Food>, private val context: Context): RecyclerView.Adapter<FoodAdapter.MyViewHolder>() {
+class FoodAdapter(var listOfFood: List<Food>, private val context: Context, private val listener: OnFoodClickListener): RecyclerView.Adapter<FoodAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = FoodItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -30,12 +30,15 @@ class FoodAdapter(var listOfFood: List<Food>, private val context: Context): Rec
             .load(food.imgUrl)
             .into(holder.foodImg)
 
+
+        holder.onFoodClicked(food, listener)
+
     }
 
     override fun getItemCount(): Int = listOfFood.size
 
 
-    private fun formattedStringPrice(price: String): String {
+    fun formattedStringPrice(price: String): String {
 
         val stotinki: String
 
@@ -58,6 +61,17 @@ class FoodAdapter(var listOfFood: List<Food>, private val context: Context): Rec
         val priceTextView = itemView.priceTextView
         val foodImg = itemView.foodImg
 
+        fun onFoodClicked(food: Food, listener: OnFoodClickListener) {
+            itemView.setOnClickListener {
+                listener.onFoodClicked(food)
+            }
+        }
+
+
+    }
+
+    interface OnFoodClickListener {
+        fun onFoodClicked(food: Food)
     }
 
 }

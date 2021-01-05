@@ -9,4 +9,6 @@ object Constants {
 
     const val KEY_ADDRESS = "KEY_ADDRESS"
 
+    const val KEY_RESTAURANT = "KEY_RESTAURANT"
+
 }
