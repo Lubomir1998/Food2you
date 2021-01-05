@@ -86,7 +86,7 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
 
             binding.remainingSumTv.text = (args.minimumPrice - args.OrderPrice).toBigDecimal().setScale(2, RoundingMode.FLOOR).toString() + " €"
             binding.messageTv.text =
-                "You can't order. ${args.restaurantName} delivers food for a minimum price of ${orderAdapter.formattedStringPrice(args.minimumPrice.toString())} €"
+                "You can't order. ${args.restaurantName} delivers food for a minimum of ${orderAdapter.formattedStringPrice(args.minimumPrice.toString())}€ without the price of the delivery."
 
         }
         else {
