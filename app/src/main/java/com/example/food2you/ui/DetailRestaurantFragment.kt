@@ -157,6 +157,9 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                 subscribeToObservers()
                 binding.swipeRefresh.isRefreshing = false
             }
+            else {
+                binding.swipeRefresh.isRefreshing = false
+            }
         }
 
         binding.favButton.setOnClickListener {
