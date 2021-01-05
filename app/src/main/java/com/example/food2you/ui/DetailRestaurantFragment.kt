@@ -22,6 +22,7 @@ import com.example.food2you.databinding.DetailRestaurantFragmentBinding
 import com.example.food2you.other.Constants.KEY_EMAIL
 import com.example.food2you.other.Constants.KEY_RESTAURANT
 import com.example.food2you.other.Status
+import com.example.food2you.other.hasInternetConnection
 import com.example.food2you.viewmodels.DetailRestaurantViewModel
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
@@ -99,7 +100,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                 it.addAll(orderList)
             }
             val action = DetailRestaurantFragmentDirections.actionDetailRestaurantFragmentToOrderFragment(
-                orderPrice,
+                orderPrice.toBigDecimal().setScale(2, RoundingMode.FLOOR).toFloat(),
                 list,
                 currentRestaurant!!.owner,
                 currentRestaurant!!.deliveryPrice,
@@ -159,23 +160,27 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
         binding.favButton.setOnClickListener {
 
-            if(email.isNotEmpty()) {
-                if (currentRestaurant?.users?.contains(email) == true) {
-                    viewModel.dislikeRestaurant(
-                        args.restaurantId,
-                        sharedPrefs.getString(KEY_EMAIL, "") ?: ""
-                    )
-                    subscribeToLikeObservers()
+            if(hasInternetConnection(requireContext())) {
+                if (email.isNotEmpty()) {
+                    if (currentRestaurant?.users?.contains(email) == true) {
+                        viewModel.dislikeRestaurant(
+                                args.restaurantId,
+                                sharedPrefs.getString(KEY_EMAIL, "") ?: ""
+                        )
+                        subscribeToLikeObservers()
+                    } else {
+                        viewModel.likeRestaurant(
+                                args.restaurantId,
+                                sharedPrefs.getString(KEY_EMAIL, "") ?: ""
+                        )
+                        subscribeToLikeObservers()
+                    }
                 } else {
-                    viewModel.likeRestaurant(
-                        args.restaurantId,
-                        sharedPrefs.getString(KEY_EMAIL, "") ?: ""
-                    )
-                    subscribeToLikeObservers()
+                    Snackbar.make(requireView(), "Sign in first", Snackbar.LENGTH_LONG).show()
                 }
             }
             else {
-                Snackbar.make(requireView(), "Sign in first", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(requireView(), "Check your connection", Snackbar.LENGTH_LONG).show()
             }
 
         }

@@ -4,6 +4,7 @@ import java.util.*
 
 data class Order(
     val restaurant: String,
+    val address: String,
     val food: List<FoodItem>,
     val price: Float,
     val timestamp: Long,
