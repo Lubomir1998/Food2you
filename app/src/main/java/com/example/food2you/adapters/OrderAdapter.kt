@@ -8,7 +8,7 @@ import com.example.food2you.data.remote.models.FoodItem
 import com.example.food2you.databinding.OrderItemBinding
 import java.math.RoundingMode
 
-class OrderAdapter(var list: List<FoodItem>): RecyclerView.Adapter<OrderAdapter.MyViewHolder>() {
+class OrderAdapter(var list: List<FoodItem>, private val listener: OnButtonClickListener): RecyclerView.Adapter<OrderAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = OrderItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -24,6 +24,10 @@ class OrderAdapter(var list: List<FoodItem>): RecyclerView.Adapter<OrderAdapter.
         holder.foodPriceTextView.text = formattedStringPrice(price.toString()) + " €"
         holder.foodNameTextView.text = foodItem.name
         holder.quantityTextView.text = foodItem.quantity.toString()
+
+
+        holder.minusClicked(listener, foodItem)
+        holder.plusClicked(listener, foodItem)
 
     }
 
@@ -53,6 +57,27 @@ class OrderAdapter(var list: List<FoodItem>): RecyclerView.Adapter<OrderAdapter.
         val foodNameTextView = itemView.foodNameTextView
         val foodPriceTextView = itemView.foodPriceTextView
         val quantityTextView = itemView.quantityTextView
+        val minus = itemView.buttonMinus
+        val plus = itemView.buttonPlus
+
+        fun minusClicked(listener: OnButtonClickListener, foodItem: FoodItem) {
+            minus.setOnClickListener {
+                listener.minusClicked(foodItem)
+            }
+        }
+
+        fun plusClicked(listener: OnButtonClickListener, foodItem: FoodItem) {
+            plus.setOnClickListener {
+                listener.plusClicked(foodItem)
+            }
+        }
+
 
     }
+
+    interface OnButtonClickListener {
+        fun minusClicked(foodItem: FoodItem)
+        fun plusClicked(foodItem: FoodItem)
+    }
+
 }

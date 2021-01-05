@@ -54,5 +54,31 @@
         android:src="#CACAC8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/foodNameTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonMinus" />
+
+    <Button
+        android:id="@+id/buttonMinus"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="#F1F0EF"
+        android:text="-"
+        android:textColor="#08A3F8"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/buttonPlus"
+        app:layout_constraintTop_toBottomOf="@+id/foodNameTextView" />
+
+    <Button
+        android:id="@+id/buttonPlus"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="#F1F0EF"
+        android:text="+"
+        android:textColor="#08A3F8"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/foodNameTextView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

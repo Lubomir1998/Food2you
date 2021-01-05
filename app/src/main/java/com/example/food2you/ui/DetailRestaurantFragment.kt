@@ -2,6 +2,7 @@ package com.example.food2you.ui
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -62,7 +63,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
 
         val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
 
