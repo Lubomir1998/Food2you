@@ -2,9 +2,12 @@ package com.example.food2you.ui
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toolbar
+import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -56,6 +59,8 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
 
         val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
         val password = sharedPrefs.getString(KEY_PASSWORD, "") ?: ""
@@ -134,7 +139,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
             it?.let { event ->
                 val result = event.peekContent()
 
-                when(result.status) {
+                when (result.status) {
                     Status.SUCCESS -> {
                         binding.progressBar.visibility = View.GONE
                         displayData(result.data!!)
@@ -147,10 +152,10 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
                         chipList.clear()
 
-                        for(restaurant in result.data) {
+                        for (restaurant in result.data) {
                             val exists = chipList.contains(restaurant.type)
-                            chipList.add(restaurant.type)
-                            if(!exists) {
+                            if (!exists) {
+                                chipList.add(restaurant.type)
                                 addChip(restaurant.type)
                             }
 
@@ -159,6 +164,10 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
                         val firstChip = binding.chipGroup.getChildAt(0) as Chip?
                         firstChip?.isSelected = true
 
+                        for (view in binding.chipGroup) {
+                            val chip = view as Chip?
+                            Log.d(TAG, "********************: ${chip?.text} - ${chip?.id} \n")
+                        }
                     }
                     Status.ERROR -> {
                         binding.progressBar.visibility = View.GONE
@@ -191,9 +200,18 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
     private fun addChip(chipText: String) {
         val chip = Chip(requireContext())
 
-        chip.text = chipText
-        chip.setChipBackgroundColorResource(R.drawable.chip_color)
-        chip.isCheckable = true
+        chip.apply {
+            text = chipText
+            setChipBackgroundColorResource(R.drawable.chip_color)
+            isCheckable = true
+            id = if(chipText == "All") {
+                1
+            }
+            else {
+                chipList.size + 1
+            }
+        }
+
         binding.chipGroup.addView(chip)
     }
 
@@ -208,7 +226,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
             it?.let { event ->
                 val result = event.peekContent()
 
-                when(result.status) {
+                when (result.status) {
                     Status.SUCCESS -> {
                         binding.progressBar.visibility = View.GONE
                         binding.recyclerView.visibility = View.VISIBLE
@@ -222,10 +240,10 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
                         chipList.clear()
 
-                        for(restaurant in result.data) {
+                        for (restaurant in result.data) {
                             val exists = chipList.contains(restaurant.type)
                             chipList.add(restaurant.type)
-                            if(!exists) {
+                            if (!exists) {
                                 addChip(restaurant.type)
                             }
 

@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -101,12 +103,13 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                 it.addAll(orderList)
             }
             val action = DetailRestaurantFragmentDirections.actionDetailRestaurantFragmentToOrderFragment(
-                orderPrice.toBigDecimal().setScale(2, RoundingMode.FLOOR).toFloat(),
-                list,
-                currentRestaurant!!.owner,
-                currentRestaurant!!.deliveryPrice,
-                currentRestaurant!!.minimalPrice,
-                currentRestaurant!!.name
+                    orderPrice.toBigDecimal().setScale(2, RoundingMode.FLOOR).toFloat(),
+                    list,
+                    currentRestaurant!!.owner,
+                    currentRestaurant!!.deliveryPrice,
+                    currentRestaurant!!.minimalPrice,
+                    currentRestaurant!!.name,
+                    args.restaurantId
                 )
             findNavController().navigate(action)
         }
@@ -273,8 +276,8 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                 when(result.status) {
                     Status.SUCCESS -> {
                         binding.progressBar2.visibility = View.GONE
-                        val list = result.data
-                        displayData(list!!)
+                        currentList = result.data
+                        displayData(currentList!!)
 
                         binding.chipGroup.removeAllViews()
                         binding.chipGroup.clearCheck()
@@ -282,14 +285,18 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
                         chipList.clear()
 
-                        for(food in result.data) {
+                        for(food in currentList!!) {
                             val exists = chipList.contains(food.type)
-                            chipList.add(food.type)
                             if(!exists) {
+                                chipList.add(food.type)
                                 addChip(food.type)
                             }
 
                         }
+
+                        val firstChip = binding.chipGroup.getChildAt(0) as Chip?
+                        firstChip?.isSelected = true
+
 
                     }
                     Status.ERROR -> {
@@ -335,9 +342,18 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
     private fun addChip(chipText: String) {
         val chip = Chip(requireContext())
 
-        chip.text = chipText
-        chip.setChipBackgroundColorResource(R.drawable.chip_color)
-        chip.isCheckable = true
+        chip.apply {
+            text = chipText
+            setChipBackgroundColorResource(R.drawable.chip_color)
+            isCheckable = true
+            id = if(chipText == "All") {
+                1
+            }
+            else {
+                chipList.size + 1
+            }
+        }
+
         binding.chipGroup.addView(chip)
     }
 

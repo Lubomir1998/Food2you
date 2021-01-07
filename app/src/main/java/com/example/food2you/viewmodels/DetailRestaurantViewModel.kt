@@ -15,39 +15,18 @@ class DetailRestaurantViewModel
 
 
     var orderList = MutableLiveData<ArrayList<FoodItem>>(arrayListOf())
-    var _orderList = ArrayList<FoodItem>()
 
-    var orderPrice = MutableLiveData<Float>(0f)
+    var orderPrice = MutableLiveData(0f)
 
     fun increasePrice(price: Float) {
         orderPrice.postValue(orderPrice.value?.plus(price))
     }
 
-    private var list = arrayListOf<String>()
-//    var quantity = 1
 
     fun addToList(item: FoodItem) {
         orderList.postValue(orderList.value?.let {
-//
-//            for(food in orderList.value!!) {
-//                list.add(food.name)
-//            }
-//
-//            if(list.contains(item.name)) {
-//                quantity += 1
-//                it.remove(item)
-//                it.add(FoodItem(item.name, item.price * quantity, quantity))
-//                _orderList.add(FoodItem(item.name, item.price * quantity, quantity))
-//                it
-//            }
-//            else {
-//                quantity = 1
-                it.add(item)
-//                _orderList.add(item)
-                it
-//            }
-
-
+            it.add(item)
+            it
         })
     }
 

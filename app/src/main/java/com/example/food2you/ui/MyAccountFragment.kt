@@ -13,6 +13,7 @@ import com.example.food2you.databinding.MyAccountFragmentBinding
 import com.example.food2you.other.Constants.KEY_ADDRESS
 import com.example.food2you.other.Constants.KEY_EMAIL
 import com.example.food2you.other.Constants.KEY_PASSWORD
+import com.example.food2you.other.Constants.KEY_PHONE
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -40,16 +41,36 @@ class MyAccountFragment: Fragment(R.layout.auth_fragment) {
 
 
         val address = sharedPrefs.getString(KEY_ADDRESS, "") ?: ""
+        val phone = sharedPrefs.getLong(KEY_PHONE, 0L)
 
-        binding.addressEditText.setText(address)
 
-        binding.saveAddressBtn.setOnClickListener {
-            if(binding.addressEditText.text.isNotEmpty()) {
-                sharedPrefs.edit().putString(KEY_ADDRESS, binding.addressEditText.text.toString()).apply()
+        binding.saveAddressEt.setText(address)
+        if(phone != 0L) {
+            binding.phoneNumberEt.setText(phone.toString())
+        }
+
+        binding.saveInfoBtn.setOnClickListener {
+            if(binding.saveAddressEt.text?.isNotEmpty() == true && binding.phoneNumberEt.text?.isNotEmpty() == true) {
+                sharedPrefs.edit()
+                        .putString(KEY_ADDRESS, binding.saveAddressEt.text.toString())
+                        .putLong(KEY_PHONE, binding.phoneNumberEt.text.toString().toLong())
+                        .apply()
+                Snackbar.make(requireView(), "Info saved", Snackbar.LENGTH_LONG).show()
+            }
+            else if(binding.saveAddressEt.text?.isNotEmpty() == true && binding.phoneNumberEt.text?.isNotEmpty() == false) {
+                sharedPrefs.edit()
+                        .putString(KEY_ADDRESS, binding.saveAddressEt.text.toString())
+                        .apply()
                 Snackbar.make(requireView(), "Address saved", Snackbar.LENGTH_LONG).show()
             }
+            else if(binding.saveAddressEt.text?.isNotEmpty() == false && binding.phoneNumberEt.text?.isNotEmpty() == true) {
+                sharedPrefs.edit()
+                        .putLong(KEY_PHONE, binding.phoneNumberEt.text.toString().toLong())
+                        .apply()
+                Snackbar.make(requireView(), "Phone saved", Snackbar.LENGTH_LONG).show()
+            }
             else {
-                Snackbar.make(requireView(), "Address can't be empty", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(requireView(), "Fields are empty", Snackbar.LENGTH_LONG).show()
             }
         }
 

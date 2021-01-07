@@ -104,5 +104,9 @@
             android:name="restaurantName"
             app:argType="string"
             android:defaultValue=" " />
+        <argument
+            android:name="restaurantId"
+            app:argType="string"
+            android:defaultValue=""/>
     </fragment>
 </navigation>

@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -18,14 +19,18 @@ import com.example.food2you.adapters.OrderAdapter
 import com.example.food2you.data.remote.models.FoodItem
 import com.example.food2you.databinding.OrderFragmentBinding
 import com.example.food2you.other.Constants.KEY_ADDRESS
+import com.example.food2you.other.Constants.KEY_PHONE
+import com.example.food2you.viewmodels.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.math.RoundingMode
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderFragment: Fragment(R.layout.order_fragment) {
 
     private lateinit var binding: OrderFragmentBinding
+    private val viewModel: OrderViewModel by viewModels()
     private val args: OrderFragmentArgs by navArgs()
     private lateinit var orderAdapter: OrderAdapter
     private lateinit var listener: OrderAdapter.OnButtonClickListener
@@ -56,7 +61,7 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
                 val item = FoodItem(foodItem.name, price)
 
                 _list.remove(item)
-                goBackIfBasketIsEmpty(_list, savedInstanceState)
+                goBackIfBasketIsEmpty(_list)
                 val currentList = fillFoodList(_list)
                 displayData(currentList)
 
@@ -86,10 +91,9 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
         list = fillFoodList(args.FoodItems.toList())
         _list = args.FoodItems.toMutableList()
 
-        goBackIfBasketIsEmpty(_list, savedInstanceState)
+        goBackIfBasketIsEmpty(_list)
 
         displayData(list)
-
 
         orderPrice = args.OrderPrice.toBigDecimal().setScale(2, RoundingMode.FLOOR).toString()
         val deliveryPrice = args.deliveryPrice.toBigDecimal().setScale(2, RoundingMode.FLOOR).toFloat()
@@ -98,7 +102,12 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
 
 
         val address = sharedPrefs.getString(KEY_ADDRESS, "") ?: ""
-        binding.addressTv.setText(address)
+        binding.addressEt.setText(address)
+
+        val phone = sharedPrefs.getLong(KEY_PHONE, 0L)
+        if(phone != 0L) {
+            binding.phoneEditText.setText(phone.toString())
+        }
 
         showWarningMessageIfPriceNotEnough(orderPrice.toFloat())
 
@@ -108,7 +117,10 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
                 .setPopUpTo(R.id.orderFragment, true)
                 .setPopUpTo(R.id.detailRestaurantFragment, true)
                 .build()
-            findNavController().navigate(R.id.action_orderFragment_to_detailRestaurantFragment, savedInstanceState, navOptions)
+
+            val action = OrderFragmentDirections.actionOrderFragmentToDetailRestaurantFragment(args.restaurantId, args.restaurantName)
+
+            findNavController().navigate(action, navOptions)
         }
 
     }
@@ -140,6 +152,8 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
         if(orderPrice < args.minimumPrice) {
             binding.warningMessage.visibility = View.VISIBLE
             binding.messageTv.visibility = View.VISIBLE
+            binding.addressEtLayout.visibility = View.GONE
+            binding.phoneEditTextLayout.visibility = View.GONE
 
             binding.remainingSumTv.text = (args.minimumPrice - orderPrice).toBigDecimal().setScale(2, RoundingMode.FLOOR).toString() + " €"
             binding.messageTv.text =
@@ -149,6 +163,8 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
         else {
             binding.warningMessage.visibility = View.GONE
             binding.messageTv.visibility = View.GONE
+            binding.addressEtLayout.visibility = View.VISIBLE
+            binding.phoneEditTextLayout.visibility = View.VISIBLE
         }
     }
 
@@ -186,13 +202,15 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
         }
     }
 
-    private fun goBackIfBasketIsEmpty(list: MutableList<FoodItem>, savedInstanceState: Bundle?) {
+    private fun goBackIfBasketIsEmpty(list: MutableList<FoodItem>) {
         if(list.isEmpty()) {
             val navOptions = NavOptions.Builder()
                     .setPopUpTo(R.id.orderFragment, true)
                     .setPopUpTo(R.id.detailRestaurantFragment, true)
                     .build()
-            findNavController().navigate(R.id.action_orderFragment_to_detailRestaurantFragment, savedInstanceState, navOptions)
+
+            val action = OrderFragmentDirections.actionOrderFragmentToDetailRestaurantFragment(args.restaurantId, args.restaurantName)
+            findNavController().navigate(action, navOptions)
         }
     }
 

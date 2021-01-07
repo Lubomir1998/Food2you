@@ -8,6 +8,7 @@ object Constants {
     const val KEY_PASSWORD = "KEY_PASSWORD"
 
     const val KEY_ADDRESS = "KEY_ADDRESS"
+    const val KEY_PHONE = "KEY_PHONE"
 
     const val KEY_RESTAURANT = "KEY_RESTAURANT"
 

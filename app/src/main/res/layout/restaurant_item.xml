@@ -1,32 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/restaurant_item_style"
-    android:layout_marginBottom="16dp">
+    android:layout_marginBottom="16dp"
+    android:background="@drawable/restaurant_item_style">
 
 
     <ImageView
         android:id="@+id/logoImg"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
+
 
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="1dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
         android:src="#CACAC8"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/logoImg"
+        app:layout_constraintStart_toEndOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -49,9 +58,9 @@
         android:id="@+id/imageView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintStart_toEndOf="@+id/imageView3"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/deliveryTimeTextView"
         app:layout_constraintTop_toBottomOf="@+id/resTitleTextView"
         app:srcCompat="@drawable/delivery_time_img" />
 
@@ -59,20 +68,21 @@
         android:id="@+id/deliveryTimeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        tools:text="40 min"
         android:textSize="14sp"
-        app:layout_constraintStart_toEndOf="@+id/imageView4"
-        app:layout_constraintTop_toBottomOf="@+id/resTitleTextView" />
+        app:layout_constraintEnd_toStartOf="@+id/deliveryPriceTextView"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/resTitleTextView"
+        tools:text="40 min" />
 
     <ImageView
         android:id="@+id/imageView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintStart_toEndOf="@+id/deliveryTimeTextView"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/deliveryPriceTextView"
         app:layout_constraintTop_toBottomOf="@+id/resTitleTextView"
         app:srcCompat="@drawable/delivery_price_img" />
 
@@ -80,34 +90,36 @@
         android:id="@+id/deliveryPriceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        tools:text="3,00 EUR"
         android:textSize="14sp"
-        app:layout_constraintStart_toEndOf="@+id/imageView5"
-        app:layout_constraintTop_toBottomOf="@+id/resTitleTextView" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/deliveryTimeTextView"
+        app:layout_constraintTop_toBottomOf="@+id/resTitleTextView"
+        tools:text="3,00 EUR" />
 
     <ImageView
         android:id="@+id/imageView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toBottomOf="@+id/imageView4"
+        app:layout_constraintStart_toStartOf="@+id/imageView4"
+        app:layout_constraintTop_toBottomOf="@+id/deliveryPriceTextView"
         app:srcCompat="@drawable/minimum_price_img" />
 
     <TextView
         android:id="@+id/minPriceTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        tools:text="Minimum 10,00 EUR"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
         android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView6"
         app:layout_constraintTop_toBottomOf="@+id/imageView4"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        tools:text="Minimum 10,00 EUR" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
