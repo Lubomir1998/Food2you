@@ -166,6 +166,15 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
             }
         }
 
+        binding.reviewsTextView.setOnClickListener {
+            currentRestaurant?.let { restaurant ->
+                if(restaurant.previews.isNotEmpty()) {
+                    val action = DetailRestaurantFragmentDirections.actionDetailRestaurantFragmentToPreviewsFragment(restaurant)
+                    findNavController().navigate(action)
+                }
+            }
+        }
+
         binding.favButton.setOnClickListener {
 
             if(hasInternetConnection(requireContext())) {
@@ -243,7 +252,15 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
 
                         binding.titleTextView.text = currentRestaurant!!.name
-                        binding.reviewsTextView.text = "${currentRestaurant!!.previews.size} reviews"
+                        binding.reviewsTextView.text = if(currentRestaurant!!.previews.size == 1) {
+                            "1 review"
+                        }
+                        else if(currentRestaurant!!.previews.isEmpty()) {
+                            "No reviews"
+                        }
+                        else {
+                            "${currentRestaurant!!.previews.size} reviews"
+                        }
 
                         Glide
                                 .with(requireContext())

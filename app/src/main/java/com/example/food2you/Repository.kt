@@ -7,6 +7,7 @@ import com.example.food2you.data.remote.models.Order
 import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.data.remote.ApiService
 import com.example.food2you.data.remote.requests.AccountRequest
+import com.example.food2you.data.remote.requests.AddPreviewRequest
 import com.example.food2you.data.remote.requests.LikeRestaurantRequest
 import com.example.food2you.other.Resource
 import com.example.food2you.other.hasInternetConnection
@@ -148,6 +149,29 @@ class Repository
             Resource.error("Couldn't connect to servers. Check your internet connection", null)
         }
 
+
+    }
+
+
+    suspend fun addPreview(id: String, preview: String) = withContext(Dispatchers.IO) {
+        val response = api.addReview(AddPreviewRequest(id, preview))
+
+        try {
+            if(response.isSuccessful && response.body()!!.isSuccessful) {
+                val restaurant = getRestaurantById(id)
+                restaurant?.let {
+                    it.previews += preview
+                    insertRestaurant(it)
+                }
+                Resource.success(response.body()?.message)
+            }
+            else {
+                Resource.error(response.body()?.message ?: response.message(), null)
+            }
+
+        } catch (e: Exception) {
+            Resource.error("Couldn't connect to servers. Check your internet connection", null)
+        }
 
     }
 

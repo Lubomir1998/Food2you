@@ -1,10 +1,13 @@
 package com.example.food2you.ui
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,10 +22,12 @@ import com.example.food2you.adapters.OrderAdapter
 import com.example.food2you.data.remote.models.FoodItem
 import com.example.food2you.data.remote.models.Order
 import com.example.food2you.databinding.OrderFragmentBinding
+import com.example.food2you.notify.AlertReceiver
 import com.example.food2you.other.Constants.KEY_ADDRESS
+import com.example.food2you.other.Constants.KEY_TIMESTAMP
 import com.example.food2you.other.Constants.KEY_PHONE
+import com.example.food2you.other.Constants.KEY_RESTAURANT_ID
 import com.example.food2you.other.Status
-import com.example.food2you.other.hasInternetConnection
 import com.example.food2you.viewmodels.OrderViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -249,6 +254,18 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
                 when(result.status) {
                     Status.SUCCESS -> {
                         binding.progressBar4.visibility = View.GONE
+
+                        val alarmManager: AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+                        val intent = Intent(requireContext(), AlertReceiver::class.java).also {
+                            it.putExtra(KEY_TIMESTAMP, order.timestamp)
+                            it.putExtra(KEY_RESTAURANT_ID, args.restaurantId)
+                        }
+
+                        val pendingIntent = PendingIntent.getBroadcast(requireContext(), order.timestamp.toInt(), intent, 0)
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, order.timestamp + TimeUnit.MINUTES.toMillis(90), pendingIntent)
+
+
                         val action = OrderFragmentDirections.actionOrderFragmentToPostOrderFragment(order, args.restaurantName, args.restaurantImgUrl)
                         val navOptions = NavOptions.Builder()
                                 .setPopUpTo(R.id.orderFragment, true)

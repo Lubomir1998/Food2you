@@ -29,6 +29,12 @@
         app:launchSingleTop="true"
         />
 
+    <action
+        android:id="@+id/action_launch_add_preview_fragment"
+        app:destination="@+id/addPreviewFragment"
+        app:launchSingleTop="true"
+        />
+
     <fragment
         android:id="@+id/restaurantsFragment"
         android:name="com.example.food2you.ui.RestaurantsFragment"
@@ -56,6 +62,9 @@
         <action
             android:id="@+id/action_detailRestaurantFragment_to_orderFragment"
             app:destination="@id/orderFragment" />
+        <action
+            android:id="@+id/action_detailRestaurantFragment_to_previewsFragment"
+            app:destination="@id/previewsFragment" />
     </fragment>
     <fragment
         android:id="@+id/favRestaurantsFragment"
@@ -131,5 +140,22 @@
             android:name="imgUrl"
             app:argType="string"
             android:defaultValue="" />
+    </fragment>
+    <fragment
+        android:id="@+id/addPreviewFragment"
+        android:name="com.example.food2you.ui.AddPreviewFragment"
+        android:label="Add preview" >
+        <argument
+            android:name="restaurantId"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+    <fragment
+        android:id="@+id/previewsFragment"
+        android:name="com.example.food2you.ui.PreviewsFragment"
+        android:label="All Previews" >
+        <argument
+            android:name="restaurant"
+            app:argType="com.example.food2you.data.local.entities.Restaurant" />
     </fragment>
 </navigation>

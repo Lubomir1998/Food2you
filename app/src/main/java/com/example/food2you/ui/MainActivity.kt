@@ -1,5 +1,6 @@
 package com.example.food2you.ui
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -7,10 +8,14 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import androidx.navigation.ui.onNavDestinationSelected
+import com.example.food2you.NavGraphDirections
 import com.example.food2you.R
+import com.example.food2you.other.Constants.Add_Preview_Action
 import com.example.food2you.other.Constants.KEY_EMAIL
+import com.example.food2you.other.Constants.KEY_RESTAURANT_ID
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.log
@@ -30,6 +35,10 @@ class MainActivity : AppCompatActivity() {
             findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar),
             navController
         )
+
+        if(intent.action == Add_Preview_Action) {
+            goToAddPreviewFragmentIfNotificationIsTapped()
+        }
 
         val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
 
@@ -70,6 +79,21 @@ class MainActivity : AppCompatActivity() {
         navController.navigateUp()
 
         return super.onSupportNavigateUp()
+    }
+
+
+    private fun goToAddPreviewFragmentIfNotificationIsTapped() {
+        val restaurantId = intent?.getStringExtra(KEY_RESTAURANT_ID) ?: ""
+        val action = NavGraphDirections.actionLaunchAddPreviewFragment(restaurantId)
+        navController.navigate(action)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
+        if(intent?.action == Add_Preview_Action) {
+            goToAddPreviewFragmentIfNotificationIsTapped()
+        }
     }
 
 }

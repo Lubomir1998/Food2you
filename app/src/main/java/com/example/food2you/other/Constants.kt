@@ -12,4 +12,9 @@ object Constants {
 
     const val KEY_RESTAURANT = "KEY_RESTAURANT"
 
+    const val KEY_TIMESTAMP = "KEY_TIMESTAMP"
+    const val KEY_RESTAURANT_ID = "KEY_RESTAURANT_ID"
+
+    const val Add_Preview_Action = "Add_Preview_Action"
+
 }
