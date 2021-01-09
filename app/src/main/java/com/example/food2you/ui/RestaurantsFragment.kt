@@ -242,8 +242,8 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
                         for (restaurant in result.data) {
                             val exists = chipList.contains(restaurant.type)
-                            chipList.add(restaurant.type)
                             if (!exists) {
+                                chipList.add(restaurant.type)
                                 addChip(restaurant.type)
                             }
 

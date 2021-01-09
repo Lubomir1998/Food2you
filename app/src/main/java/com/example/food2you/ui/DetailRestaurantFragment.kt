@@ -109,7 +109,8 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                     currentRestaurant!!.deliveryPrice,
                     currentRestaurant!!.minimalPrice,
                     currentRestaurant!!.name,
-                    args.restaurantId
+                    args.restaurantId,
+                    currentRestaurant!!.imgUrl
                 )
             findNavController().navigate(action)
         }

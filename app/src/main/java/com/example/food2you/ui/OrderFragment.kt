@@ -17,10 +17,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.food2you.R
 import com.example.food2you.adapters.OrderAdapter
 import com.example.food2you.data.remote.models.FoodItem
+import com.example.food2you.data.remote.models.Order
 import com.example.food2you.databinding.OrderFragmentBinding
 import com.example.food2you.other.Constants.KEY_ADDRESS
 import com.example.food2you.other.Constants.KEY_PHONE
+import com.example.food2you.other.Status
+import com.example.food2you.other.hasInternetConnection
 import com.example.food2you.viewmodels.OrderViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.math.RoundingMode
 import java.util.concurrent.TimeUnit
@@ -112,6 +117,22 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
         showWarningMessageIfPriceNotEnough(orderPrice.toFloat())
 
 
+
+        binding.orderBtn.setOnClickListener {
+            val dialog = MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Make order?")
+                    .setMessage("Are you sure you want to make this order?")
+                    .setPositiveButton("Yes"){_, _ ->
+                        makeOrder()
+                    }
+                    .setNegativeButton("Cancel"){ dialogInterface, _ ->
+                        dialogInterface.cancel()
+                    }
+                    .create()
+
+            dialog.show()
+        }
+
         binding.closeImg.setOnClickListener {
             val navOptions = NavOptions.Builder()
                 .setPopUpTo(R.id.orderFragment, true)
@@ -154,6 +175,7 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
             binding.messageTv.visibility = View.VISIBLE
             binding.addressEtLayout.visibility = View.GONE
             binding.phoneEditTextLayout.visibility = View.GONE
+            binding.orderBtn.visibility = View.GONE
 
             binding.remainingSumTv.text = (args.minimumPrice - orderPrice).toBigDecimal().setScale(2, RoundingMode.FLOOR).toString() + " €"
             binding.messageTv.text =
@@ -165,6 +187,7 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
             binding.messageTv.visibility = View.GONE
             binding.addressEtLayout.visibility = View.VISIBLE
             binding.phoneEditTextLayout.visibility = View.VISIBLE
+            binding.orderBtn.visibility = View.VISIBLE
         }
     }
 
@@ -212,6 +235,38 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
             val action = OrderFragmentDirections.actionOrderFragmentToDetailRestaurantFragment(args.restaurantId, args.restaurantName)
             findNavController().navigate(action, navOptions)
         }
+    }
+
+    private fun makeOrder() {
+        val order = Order(args.restaurantOwner, binding.addressEt.text.toString(), binding.phoneEditText.text.toString().toLong(), fillFoodList(_list), orderPrice.toFloat(), System.currentTimeMillis())
+        viewModel.order(order)
+        subscribeToObservers(order)
+    }
+
+    private fun subscribeToObservers(order: Order) {
+        viewModel.orderStatus.observe(viewLifecycleOwner, {
+            it?.let { result ->
+                when(result.status) {
+                    Status.SUCCESS -> {
+                        binding.progressBar4.visibility = View.GONE
+                        val action = OrderFragmentDirections.actionOrderFragmentToPostOrderFragment(order, args.restaurantName, args.restaurantImgUrl)
+                        val navOptions = NavOptions.Builder()
+                                .setPopUpTo(R.id.orderFragment, true)
+                                .setPopUpTo(R.id.detailRestaurantFragment, true)
+                                .build()
+
+                        findNavController().navigate(action, navOptions)
+                    }
+                    Status.LOADING -> {
+                        binding.progressBar4.visibility = View.VISIBLE
+                    }
+                    Status.ERROR -> {
+                        binding.progressBar4.visibility = View.GONE
+                        Snackbar.make(requireView(), "Something went wrong", Snackbar.LENGTH_LONG).show()
+                    }
+                }
+            }
+        })
     }
 
 }

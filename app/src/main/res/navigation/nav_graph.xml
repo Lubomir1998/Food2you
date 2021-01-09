@@ -108,5 +108,28 @@
             android:name="restaurantId"
             app:argType="string"
             android:defaultValue=""/>
+        <action
+            android:id="@+id/action_orderFragment_to_postOrderFragment"
+            app:destination="@id/postOrderFragment" />
+        <argument
+            android:name="restaurantImgUrl"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+    <fragment
+        android:id="@+id/postOrderFragment"
+        android:name="com.example.food2you.ui.PostOrderFragment"
+        android:label="PostOrderFragment" >
+        <argument
+            android:name="order"
+            app:argType="com.example.food2you.data.remote.models.Order" />
+        <argument
+            android:name="restaurantName"
+            app:argType="string"
+            android:defaultValue=""/>
+        <argument
+            android:name="imgUrl"
+            app:argType="string"
+            android:defaultValue="" />
     </fragment>
 </navigation>
