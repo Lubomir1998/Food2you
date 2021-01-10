@@ -223,7 +223,10 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
                     }
                     Status.ERROR -> {
-                        Snackbar.make(requireView(), "Something went wrong", Snackbar.LENGTH_LONG).show()
+                        event.getContentIfNotHandled()?.let { error ->
+                            Snackbar.make(requireView(), error.message ?: "Something went wrong", Snackbar.LENGTH_LONG).show()
+                        }
+
                     }
                     Status.LOADING -> {}
                 }
