@@ -124,18 +124,23 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
 
 
         binding.orderBtn.setOnClickListener {
-            val dialog = MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Make order?")
-                    .setMessage("Are you sure you want to make this order?")
-                    .setPositiveButton("Yes"){_, _ ->
-                        makeOrder()
-                    }
-                    .setNegativeButton("Cancel"){ dialogInterface, _ ->
-                        dialogInterface.cancel()
-                    }
-                    .create()
+            if(binding.addressEt.text.toString().isNotEmpty() && binding.phoneEditText.text.toString().isNotEmpty()) {
+                val dialog = MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Make order?")
+                        .setMessage("Are you sure you want to make this order?")
+                        .setPositiveButton("Yes") { _, _ ->
+                            makeOrder()
+                        }
+                        .setNegativeButton("Cancel") { dialogInterface, _ ->
+                            dialogInterface.cancel()
+                        }
+                        .create()
 
-            dialog.show()
+                dialog.show()
+            }
+            else {
+                Snackbar.make(requireView(), "Empty fields", Snackbar.LENGTH_LONG).show()
+            }
         }
 
         binding.closeImg.setOnClickListener {
