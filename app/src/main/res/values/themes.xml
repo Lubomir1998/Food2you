@@ -19,4 +19,8 @@
         <item name="android:textColor">#fff</item>
     </style>
 
+    <style name="splashScreenTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="android:windowBackground">@drawable/splash_screen_backround</item>
+    </style>
+
 </resources>

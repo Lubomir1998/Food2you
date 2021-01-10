@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(R.style.Theme_Food2you)
         setContentView(R.layout.activity_main)
 
         navController = Navigation.findNavController(this, R.id.navHostFragment)
