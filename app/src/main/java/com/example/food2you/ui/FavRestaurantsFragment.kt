@@ -2,7 +2,6 @@ package com.example.food2you.ui
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,8 +18,6 @@ import com.example.food2you.other.Status
 import com.example.food2you.viewmodels.RestaurantsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-
-private const val TAG = "FavRestaurantsFragment"
 
 @AndroidEntryPoint
 class FavRestaurantsFragment: Fragment(R.layout.auth_fragment) {

@@ -4,10 +4,9 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.Log
-import android.view.*
-import android.widget.Toolbar
-import androidx.core.view.iterator
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -15,10 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.food2you.R
 import com.example.food2you.adapters.RestaurantAdapter
 import com.example.food2you.data.local.entities.Restaurant
-import com.example.food2you.databinding.ActivityMainBinding
 import com.example.food2you.databinding.RestaurantsFragmentBinding
 import com.example.food2you.other.BasicAuthInterceptor
-import com.example.food2you.other.Constants
 import com.example.food2you.other.Constants.KEY_EMAIL
 import com.example.food2you.other.Constants.KEY_PASSWORD
 import com.example.food2you.other.Status
@@ -27,8 +24,6 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-
-private const val TAG = "RestaurantsFragment"
 
 @AndroidEntryPoint
 class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
@@ -77,10 +72,9 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
         }
 
         restaurantAdapter = RestaurantAdapter(listOf(), requireContext(), listener)
-        setupRecyclerView()
 
-        viewModel.getAllRestaurants()
-        subscribeToOtherObserver()
+        setupRecyclerView()
+        subscribeToObservers()
 
         binding.chipGroup.setOnCheckedChangeListener { group, checkedId ->
             if(checkedId != -1) {
@@ -110,7 +104,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
         }
 
         binding.swipeRefresh.setOnRefreshListener {
-            subscribeToObservers()
+            viewModel.sync()
             binding.swipeRefresh.isRefreshing = false
         }
 
@@ -136,93 +130,6 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
     @SuppressLint("SetTextI18n")
     private fun subscribeToObservers() {
         viewModel.allRestaurants.observe(viewLifecycleOwner, {
-            it?.let { event ->
-                val result = event.peekContent()
-
-                when (result.status) {
-                    Status.SUCCESS -> {
-                        binding.progressBar.visibility = View.GONE
-                        displayData(result.data!!)
-                        currentList = result.data
-
-                        binding.orderTextView.text = "Order from ${result.data.size} restaurants"
-
-                        binding.chipGroup.removeAllViews()
-                        addChip("All")
-
-                        chipList.clear()
-
-                        for (restaurant in result.data) {
-                            val exists = chipList.contains(restaurant.type)
-                            if (!exists) {
-                                chipList.add(restaurant.type)
-                                addChip(restaurant.type)
-                            }
-
-                        }
-
-                        val firstChip = binding.chipGroup.getChildAt(0) as Chip?
-                        firstChip?.isSelected = true
-
-                        for (view in binding.chipGroup) {
-                            val chip = view as Chip?
-                            Log.d(TAG, "********************: ${chip?.text} - ${chip?.id} \n")
-                        }
-                    }
-                    Status.ERROR -> {
-                        binding.progressBar.visibility = View.GONE
-                        event.getContentIfNotHandled()?.let { error ->
-                            error.message?.let { message ->
-                                Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show()
-                            }
-                        }
-                        result.data?.let {
-                            displayData(it)
-                        }
-                    }
-                    Status.LOADING -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                        binding.orderTextView.text = "Loading restaurants..."
-                    }
-                }
-
-            }
-
-        })
-    }
-
-    private fun displayData(list: List<Restaurant>) {
-        restaurantAdapter.listOfRestaurants = list
-        restaurantAdapter.notifyDataSetChanged()
-    }
-
-    @SuppressLint("ResourceType")
-    private fun addChip(chipText: String) {
-        val chip = Chip(requireContext())
-
-        chip.apply {
-            text = chipText
-            setChipBackgroundColorResource(R.drawable.chip_color)
-            isCheckable = true
-            id = if(chipText == "All") {
-                1
-            }
-            else {
-                chipList.size + 1
-            }
-        }
-
-        binding.chipGroup.addView(chip)
-    }
-
-    private fun authenticateApi(email: String, password: String) {
-        baseAuthInterceptor.email = email
-        baseAuthInterceptor.password = password
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun subscribeToOtherObserver() {
-        viewModel.allRes.observe(viewLifecycleOwner, {
             it?.let { event ->
                 val result = event.peekContent()
 
@@ -274,7 +181,38 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
 
             }
+
         })
     }
+
+    private fun displayData(list: List<Restaurant>) {
+        restaurantAdapter.listOfRestaurants = list
+        restaurantAdapter.notifyDataSetChanged()
+    }
+
+    @SuppressLint("ResourceType")
+    private fun addChip(chipText: String) {
+        val chip = Chip(requireContext())
+
+        chip.apply {
+            text = chipText
+            setChipBackgroundColorResource(R.drawable.chip_color)
+            isCheckable = true
+            id = if(chipText == "All") {
+                1
+            }
+            else {
+                chipList.size + 1
+            }
+        }
+
+        binding.chipGroup.addView(chip)
+    }
+
+    private fun authenticateApi(email: String, password: String) {
+        baseAuthInterceptor.email = email
+        baseAuthInterceptor.password = password
+    }
+
 
 }

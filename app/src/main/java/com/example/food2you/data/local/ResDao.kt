@@ -21,9 +21,6 @@ interface ResDao {
     @Query("SELECT * FROM restaurant")
     fun getAllRestaurants(): Flow<List<Restaurant>>
 
-    @Query("SELECT * FROM restaurant")
-    suspend fun _getAllRestaurants(): List<Restaurant>?
-
     @Query("SELECT * FROM food WHERE restaurantName = :restaurant")
     suspend fun getFoodForRestaurant(restaurant: String): List<Food>?
 

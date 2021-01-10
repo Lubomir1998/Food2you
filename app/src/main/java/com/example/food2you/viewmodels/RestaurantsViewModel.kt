@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 class RestaurantsViewModel
 @ViewModelInject constructor(private val repository: Repository): ViewModel(){
 
-    private val _forceUpdate = MutableLiveData(true)
+    private val _forceUpdate = MutableLiveData(false)
 
     private val _allRestaurants = _forceUpdate.switchMap {
         repository.getAllRestaurants().asLiveData(viewModelScope.coroutineContext)
@@ -46,22 +46,7 @@ class RestaurantsViewModel
         }
     }
 
-    private val _allRes: MutableLiveData<Event<Resource<List<Restaurant>>>> = MutableLiveData()
-
-    val allRes: LiveData<Event<Resource<List<Restaurant>>>> = _allRes
-
-    fun getAllRestaurants() {
-        viewModelScope.launch {
-            _allRes.postValue(Event(Resource.loading(null)))
-
-            val result = repository.allRestaurants()
-
-            result?.let {
-                _allRes.postValue(Event((Resource.success(it))))
-            } ?: _allRes.postValue(Event(Resource.error("Unknown error occurred", null)))
-
-        }
-    }
+    fun sync() = _forceUpdate.postValue(true)
 
 
 }

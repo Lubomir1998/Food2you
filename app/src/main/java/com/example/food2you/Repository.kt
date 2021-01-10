@@ -187,37 +187,13 @@ class Repository
             null
         }
 
-        result?.let { response ->
-            response.body()?.let { restaurants ->
-                dao.deleteAllRestaurants()
-                restaurants.forEach {
-                    insertRestaurant(it)
-                }
-            }
-            return dao._getAllRestaurants()
+        result?.let {
+            return it.body()
         }
 
         return null
     }
 
-    suspend fun allRestaurants(): List<Restaurant>? {
-        val result = try {
-            api.getAllRestaurants()
-        } catch (e: Exception) {
-            null
-        }
-
-        result?.let { response ->
-            response.body()?.let { restaurants ->
-                dao.deleteAllRestaurants()
-                restaurants.forEach {
-                    insertRestaurant(it)
-                }
-            }
-        }
-
-        return dao._getAllRestaurants()
-    }
 
     suspend fun getFoodForRestaurant(restaurant: String): List<Food>? {
         val result = try {

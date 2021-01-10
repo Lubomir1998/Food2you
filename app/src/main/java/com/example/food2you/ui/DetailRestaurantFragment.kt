@@ -4,11 +4,9 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -32,8 +30,6 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.math.RoundingMode
 import javax.inject.Inject
-
-private const val TAG = "DetailRestaurantFragmen"
 
 @AndroidEntryPoint
 class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
