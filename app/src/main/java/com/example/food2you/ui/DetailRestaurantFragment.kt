@@ -111,7 +111,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
             findNavController().navigate(action)
         }
 
-        foodAdapter = FoodAdapter(listOf(), requireContext(), listener)
+        foodAdapter = FoodAdapter(requireContext(), listener)
         setUpRecyclerView()
 
         if(args.restaurantId.isNotEmpty()) {
@@ -145,7 +145,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                     viewModel.filter(chip?.text.toString())
                     subscribeFilterLiveData()
                 } else {
-                    displayData(currentList!!)
+                    foodAdapter.displayData(currentList!!)
                 }
 
             }
@@ -294,7 +294,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                     Status.SUCCESS -> {
                         binding.progressBar2.visibility = View.GONE
                         currentList = result.data
-                        displayData(currentList!!)
+                        foodAdapter.displayData(currentList!!)
 
                         binding.chipGroup.removeAllViews()
                         binding.chipGroup.clearCheck()
@@ -324,7 +324,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                             }
                         }
                         result.data?.let {
-                            displayData(it)
+                            foodAdapter.displayData(it)
                         }
                     }
                     Status.LOADING -> {
@@ -336,10 +336,10 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
     }
 
 
-    private fun displayData(list: List<Food>) {
-        foodAdapter.listOfFood = list
-        foodAdapter.notifyDataSetChanged()
-    }
+//    private fun displayData(list: List<Food>) {
+//        foodAdapter.listOfFood = list
+//        foodAdapter.notifyDataSetChanged()
+//    }
 
     private fun setUpRecyclerView() {
         binding.recyclerView.apply {
@@ -351,7 +351,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
     private fun subscribeFilterLiveData() {
         viewModel.filteredFood.observe(viewLifecycleOwner, {
-            displayData(it)
+            foodAdapter.displayData(it)
         })
     }
 

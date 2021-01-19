@@ -4,12 +4,48 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.food2you.data.local.entities.Food
 import com.example.food2you.databinding.FoodItemBinding
 
-class FoodAdapter(var listOfFood: List<Food>, private val context: Context, private val listener: OnFoodClickListener): RecyclerView.Adapter<FoodAdapter.MyViewHolder>() {
+class FoodAdapter(private val context: Context, private val listener: OnFoodClickListener): RecyclerView.Adapter<FoodAdapter.MyViewHolder>() {
+
+    private var list = listOf<Food>()
+
+    class FoodDiffUtil(
+        var oldList: List<Food>,
+        var newList: List<Food>
+    ) : DiffUtil.Callback(){
+        override fun getOldListSize(): Int {
+            return oldList.size
+        }
+
+        override fun getNewListSize(): Int {
+            return newList.size
+        }
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].id == newList[newItemPosition].id
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
+        }
+    }
+
+    fun displayData(meals: List<Food>) {
+        val oldList = list
+        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(
+            FoodDiffUtil(
+                oldList,
+                meals
+            )
+        )
+        list = meals
+        diffResult.dispatchUpdatesTo(this)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = FoodItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -18,7 +54,7 @@ class FoodAdapter(var listOfFood: List<Food>, private val context: Context, priv
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val food = listOfFood[position]
+        val food = list[position]
 
         holder.nameTextView.text = food.name
         holder.descriptionTextView.text = food.description
@@ -35,7 +71,7 @@ class FoodAdapter(var listOfFood: List<Food>, private val context: Context, priv
 
     }
 
-    override fun getItemCount(): Int = listOfFood.size
+    override fun getItemCount(): Int = list.size
 
 
     fun formattedStringPrice(price: String): String {

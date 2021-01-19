@@ -2,14 +2,53 @@ package com.example.food2you.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.databinding.RestaurantItemBinding
 
-class RestaurantAdapter(var listOfRestaurants: List<Restaurant>, private val context: Context, private val listener: OnRestaurantClickListener): RecyclerView.Adapter<RestaurantAdapter.MyViewHolder>() {
+class RestaurantAdapter(private val context: Context, private val listener: OnRestaurantClickListener): RecyclerView.Adapter<RestaurantAdapter.MyViewHolder>() {
+
+    private var list = listOf<Restaurant>()
+
+    class RestaurantDiffUtil(
+        var oldList: List<Restaurant>,
+        var newList: List<Restaurant>
+    ) : DiffUtil.Callback(){
+        override fun getOldListSize(): Int {
+            return oldList.size
+        }
+
+        override fun getNewListSize(): Int {
+            return newList.size
+        }
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].id == newList[newItemPosition].id
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
+        }
+    }
+
+    fun displayData(restaurants: List<Restaurant>) {
+        val oldList = list
+        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(
+            RestaurantDiffUtil(
+                oldList,
+                restaurants
+            )
+        )
+        list = restaurants
+        diffResult.dispatchUpdatesTo(this)
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = RestaurantItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -19,7 +58,7 @@ class RestaurantAdapter(var listOfRestaurants: List<Restaurant>, private val con
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val restaurant = listOfRestaurants[position]
+        val restaurant = list[position]
 
         holder.nameTextView.text = restaurant.name
         holder.deliveryTimeTextView.text = "${restaurant.deliveryTimeMinutes} min"
@@ -47,7 +86,7 @@ class RestaurantAdapter(var listOfRestaurants: List<Restaurant>, private val con
     }
 
 
-    override fun getItemCount(): Int = listOfRestaurants.size
+    override fun getItemCount(): Int = list.size
 
 
     private fun formattedStringPrice(price: String): String {

@@ -71,7 +71,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
             }
         }
 
-        restaurantAdapter = RestaurantAdapter(listOf(), requireContext(), listener)
+        restaurantAdapter = RestaurantAdapter(requireContext(), listener)
 
         setupRecyclerView()
         subscribeToObservers()
@@ -95,7 +95,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
                     subscribeFilterLiveData()
                 }
                 else {
-                    displayData(currentList!!)
+                    restaurantAdapter.displayData(currentList!!)
                 }
 
             }
@@ -123,7 +123,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
     private fun subscribeFilterLiveData() {
         viewModel.filteredRestaurants.observe(viewLifecycleOwner, {
-            displayData(it)
+            restaurantAdapter.displayData(it)
         })
     }
 
@@ -137,7 +137,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
                     Status.SUCCESS -> {
                         binding.progressBar.visibility = View.GONE
                         binding.recyclerView.visibility = View.VISIBLE
-                        displayData(result.data!!)
+                        restaurantAdapter.displayData(result.data!!)
                         currentList = result.data
 
                         binding.orderTextView.text = "Order from ${result.data.size} restaurants"
@@ -169,7 +169,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
                             }
                         }
                         result.data?.let {
-                            displayData(it)
+                            restaurantAdapter.displayData(it)
                         }
                     }
                     Status.LOADING -> {
@@ -185,10 +185,10 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
         })
     }
 
-    private fun displayData(list: List<Restaurant>) {
-        restaurantAdapter.listOfRestaurants = list
-        restaurantAdapter.notifyDataSetChanged()
-    }
+//    private fun displayData(list: List<Restaurant>) {
+//        restaurantAdapter.listOfRestaurants = list
+//        restaurantAdapter.notifyDataSetChanged()
+//    }
 
     @SuppressLint("ResourceType")
     private fun addChip(chipText: String) {

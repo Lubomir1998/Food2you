@@ -50,7 +50,7 @@ class FavRestaurantsFragment: Fragment(R.layout.auth_fragment) {
             }
         }
 
-        restaurantAdapter = RestaurantAdapter(listOf(), requireContext(), listener)
+        restaurantAdapter = RestaurantAdapter(requireContext(), listener)
 
         val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
 
@@ -102,7 +102,7 @@ class FavRestaurantsFragment: Fragment(R.layout.auth_fragment) {
 
                             binding.recyclerView.visibility = View.VISIBLE
 
-                            displayData(list)
+                            restaurantAdapter.displayData(list)
                         } else {
                             binding.button.visibility = View.VISIBLE
                             binding.textView.visibility = View.VISIBLE
@@ -135,10 +135,10 @@ class FavRestaurantsFragment: Fragment(R.layout.auth_fragment) {
 
     }
 
-    private fun displayData(list: List<Restaurant>) {
-        restaurantAdapter.listOfRestaurants = list
-        restaurantAdapter.notifyDataSetChanged()
-    }
+//    private fun displayData(list: List<Restaurant>) {
+//        restaurantAdapter.listOfRestaurants = list
+//        restaurantAdapter.notifyDataSetChanged()
+//    }
 
 
     private fun setupRecyclerView() {
