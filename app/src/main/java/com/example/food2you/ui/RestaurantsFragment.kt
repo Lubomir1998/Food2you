@@ -185,11 +185,6 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
         })
     }
 
-//    private fun displayData(list: List<Restaurant>) {
-//        restaurantAdapter.listOfRestaurants = list
-//        restaurantAdapter.notifyDataSetChanged()
-//    }
-
     @SuppressLint("ResourceType")
     private fun addChip(chipText: String) {
         val chip = Chip(requireContext())

@@ -201,8 +201,6 @@ class Repository
         } catch (e: Exception) {
             null
         }
-
-
         result?.let { response ->
             response.body()?.let {
                 dao.deleteAllFood()

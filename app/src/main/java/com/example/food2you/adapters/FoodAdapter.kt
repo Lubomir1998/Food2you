@@ -31,7 +31,7 @@ class FoodAdapter(private val context: Context, private val listener: OnFoodClic
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition] == newList[newItemPosition]
+            return oldList[oldItemPosition].hashCode() == newList[newItemPosition].hashCode()
         }
     }
 
