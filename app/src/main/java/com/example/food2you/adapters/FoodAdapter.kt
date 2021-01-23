@@ -2,8 +2,11 @@ package com.example.food2you.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -12,12 +15,13 @@ import com.example.food2you.databinding.FoodItemBinding
 
 class FoodAdapter(private val context: Context, private val listener: OnFoodClickListener): RecyclerView.Adapter<FoodAdapter.MyViewHolder>() {
 
-    private var list = listOf<Food>()
+    private var list = mutableListOf<Food>()
 
     class FoodDiffUtil(
         var oldList: List<Food>,
         var newList: List<Food>
     ) : DiffUtil.Callback(){
+
         override fun getOldListSize(): Int {
             return oldList.size
         }
@@ -31,21 +35,24 @@ class FoodAdapter(private val context: Context, private val listener: OnFoodClic
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].hashCode() == newList[newItemPosition].hashCode()
+            return oldList[oldItemPosition] == newList[newItemPosition]
         }
+
     }
 
     fun displayData(meals: List<Food>) {
-        val oldList = list
         val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(
             FoodDiffUtil(
-                oldList,
+                list,
                 meals
             )
         )
-        list = meals
+        list.clear()
+        list.addAll(meals)
         diffResult.dispatchUpdatesTo(this)
     }
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = FoodItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)

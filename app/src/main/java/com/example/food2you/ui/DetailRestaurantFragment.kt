@@ -203,6 +203,34 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
     @SuppressLint("SetTextI18n")
     private fun subscribeToObservers() {
+        viewModel.allRestaurants.observe(viewLifecycleOwner, {
+            it?.let { event ->
+                val result = event.peekContent()
+
+                when(result.status) {
+                    Status.SUCCESS -> {
+                        val list = result.data!!
+
+                        for(restaurant in list) {
+                            if(restaurant.id == args.restaurantId) {
+                                currentRestaurant = restaurant
+                            }
+                        }
+
+                    }
+                    Status.ERROR -> {
+                        event.getContentIfNotHandled()?.let { error ->
+                            Snackbar.make(requireView(), error.message ?: "Something went wrong", Snackbar.LENGTH_LONG).show()
+                        }
+
+                    }
+                    Status.LOADING -> {}
+                }
+
+            }
+        })
+
+
         viewModel.restaurant.observe(viewLifecycleOwner, {
             it?.let { event ->
                 val result = event.peekContent()
