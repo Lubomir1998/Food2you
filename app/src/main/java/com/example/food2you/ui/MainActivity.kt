@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -13,10 +14,20 @@ import androidx.navigation.ui.NavigationUI.setupWithNavController
 import androidx.navigation.ui.onNavDestinationSelected
 import com.example.food2you.NavGraphDirections
 import com.example.food2you.R
+import com.example.food2you.Repository
+import com.example.food2you.data.remote.PushNotification
+import com.example.food2you.other.Constants
 import com.example.food2you.other.Constants.Add_Preview_Action
 import com.example.food2you.other.Constants.KEY_EMAIL
 import com.example.food2you.other.Constants.KEY_RESTAURANT_ID
+import com.example.food2you.service.FirebaseService
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.log
 
@@ -25,11 +36,26 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
     @Inject lateinit var sharedPrefs: SharedPreferences
+    @Inject lateinit var repository: Repository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_Food2you)
         setContentView(R.layout.activity_main)
+
+
+        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
+            val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
+            val pushNotification = PushNotification("On the way!", "Your order is currently on the way", it.token)
+            sharedPrefs.edit().putString(Constants.KEY_TOKEN, it.token).apply()
+
+            if(email.isNotEmpty()) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    repository.registerUserToken(pushNotification, email)
+                }
+            }
+        }
+
 
         navController = Navigation.findNavController(this, R.id.navHostFragment)
         setupWithNavController(

@@ -42,4 +42,7 @@ interface ApiService {
     @POST("/order")
     suspend fun orderFood(@Body order: Order): Response<SimpleResponse>
 
+    @POST("/registerUserToken/{user}")
+    suspend fun registerUserToken(@Body pushNotification: PushNotification, @Path("user") userEmail: String): Response<SimpleResponse>
+
 }

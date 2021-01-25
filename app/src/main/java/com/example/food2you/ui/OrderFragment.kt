@@ -27,6 +27,7 @@ import com.example.food2you.other.Constants.KEY_ADDRESS
 import com.example.food2you.other.Constants.KEY_TIMESTAMP
 import com.example.food2you.other.Constants.KEY_PHONE
 import com.example.food2you.other.Constants.KEY_RESTAURANT_ID
+import com.example.food2you.other.Constants.KEY_TOKEN
 import com.example.food2you.other.Status
 import com.example.food2you.viewmodels.OrderViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -248,7 +249,8 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
     }
 
     private fun makeOrder() {
-        val order = Order(args.restaurantOwner, binding.addressEt.text.toString(), binding.phoneEditText.text.toString().toLong(), fillFoodList(_list), orderPrice.toFloat(), System.currentTimeMillis())
+        val token = sharedPrefs.getString(KEY_TOKEN, "empty") ?: "empty"
+        val order = Order(args.restaurantOwner, binding.addressEt.text.toString(), token, binding.phoneEditText.text.toString().toLong(), fillFoodList(_list), orderPrice.toFloat() + args.deliveryPrice, System.currentTimeMillis(), "Waiting")
         viewModel.order(order)
         subscribeToObservers(order)
     }
@@ -260,15 +262,15 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
                     Status.SUCCESS -> {
                         binding.progressBar4.visibility = View.GONE
 
-                        val alarmManager: AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+//                        val alarmManager: AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-                        val intent = Intent(requireContext(), AlertReceiver::class.java).also { intent ->
-                            intent.putExtra(KEY_TIMESTAMP, order.timestamp)
-                            intent.putExtra(KEY_RESTAURANT_ID, args.restaurantId)
-                        }
+//                        val intent = Intent(requireContext(), AlertReceiver::class.java).also { intent ->
+//                            intent.putExtra(KEY_TIMESTAMP, order.timestamp)
+//                            intent.putExtra(KEY_RESTAURANT_ID, args.restaurantId)
+//                        }
 
-                        val pendingIntent = PendingIntent.getBroadcast(requireContext(), order.timestamp.toInt(), intent, 0)
-                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, order.timestamp + TimeUnit.MINUTES.toMillis(1), pendingIntent)
+//                        val pendingIntent = PendingIntent.getBroadcast(requireContext(), order.timestamp.toInt(), intent, 0)
+//                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, order.timestamp + TimeUnit.MINUTES.toMillis(1), pendingIntent)
 
 
                         val action = OrderFragmentDirections.actionOrderFragmentToPostOrderFragment(order, args.restaurantName, args.restaurantImgUrl)

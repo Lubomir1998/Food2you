@@ -1,5 +1,7 @@
 package com.example.food2you.other
 
+import com.example.food2you.BuildConfig
+
 object Constants {
 
     const val ENCRYPTED_SHARED_PREFS_NAME = "ENCRYPTED_SHARED_PREFS_NAME"
@@ -16,5 +18,12 @@ object Constants {
     const val KEY_RESTAURANT_ID = "KEY_RESTAURANT_ID"
 
     const val Add_Preview_Action = "Add_Preview_Action"
+
+    const val KEY_TOKEN = "KEY_TOKEN"
+
+    const val SERVER_KEY = BuildConfig.SERVER_KEY
+    const val CONTENT_TYPE = "application/json"
+
+    const val CHANNEL_ID = "CHANNEL_ID"
 
 }

@@ -7,6 +7,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.example.food2you.data.local.DbHelper
 import com.example.food2you.data.remote.ApiService
+import com.example.food2you.data.remote.FirebaseApi
 import com.example.food2you.other.BasicAuthInterceptor
 import com.example.food2you.other.Constants.ENCRYPTED_SHARED_PREFS_NAME
 import dagger.Module
@@ -59,6 +60,14 @@ object AppModule {
             .build()
             .create(ApiService::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideFirebaseApi() = Retrofit.Builder()
+        .baseUrl("https://fcm.googleapis.com")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(FirebaseApi::class.java)
 
 
     @Singleton

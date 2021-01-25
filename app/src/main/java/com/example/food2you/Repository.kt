@@ -6,6 +6,7 @@ import com.example.food2you.data.local.entities.Food
 import com.example.food2you.data.remote.models.Order
 import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.data.remote.ApiService
+import com.example.food2you.data.remote.PushNotification
 import com.example.food2you.data.remote.requests.AccountRequest
 import com.example.food2you.data.remote.requests.AddPreviewRequest
 import com.example.food2you.data.remote.requests.LikeRestaurantRequest
@@ -212,6 +213,9 @@ class Repository
 
         return dao.getFoodForRestaurant(restaurant)
     }
+
+    // Firebase stuff
+    suspend fun registerUserToken(pushNotification: PushNotification, email: String) = api.registerUserToken(pushNotification, email)
 
 
 }
