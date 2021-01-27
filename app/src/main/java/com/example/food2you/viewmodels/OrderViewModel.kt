@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.food2you.Repository
+import com.example.food2you.data.remote.PushNotification
 import com.example.food2you.data.remote.models.Order
 import com.example.food2you.other.Resource
 import kotlinx.coroutines.launch
@@ -24,6 +25,11 @@ class OrderViewModel
             _orderStatus.postValue(result)
         }
     }
+
+    fun sendPushNotification(pushNotification: PushNotification) = viewModelScope.launch {
+        repository.sendPushNotification(pushNotification)
+    }
+
 
 
 }

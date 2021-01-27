@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.food2you.other.Resource
 import com.example.food2you.Repository
+import com.example.food2you.data.remote.UserToken
+import com.example.food2you.data.remote.models.Order
 import kotlinx.coroutines.launch
 
 class AuthViewModel @ViewModelInject constructor(private val repository: Repository): ViewModel() {
@@ -21,7 +23,7 @@ class AuthViewModel @ViewModelInject constructor(private val repository: Reposit
 
 
 
-    fun register(email: String, password: String, confirmPassword: String) {
+    fun register(email: String, password: String, confirmPassword: String, token: String) {
         _registerStatus.postValue(Resource.loading(null))
 
         if(email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
@@ -47,7 +49,7 @@ class AuthViewModel @ViewModelInject constructor(private val repository: Reposit
             return
         }
         viewModelScope.launch {
-            val result = repository.register(email, password)
+            val result = repository.register(email, password, token)
             _registerStatus.postValue(result)
         }
 
@@ -64,6 +66,23 @@ class AuthViewModel @ViewModelInject constructor(private val repository: Reposit
             val result = repository.login(email, password)
             _loginStatus.postValue(result)
         }
+    }
+
+
+    var waitingOrdersLiveData: MutableLiveData<List<Order>> = MutableLiveData(listOf())
+
+    fun getAllWaitingOrders() = viewModelScope.launch {
+        val list = repository.getAllWaitingOrdersForUser()
+        waitingOrdersLiveData.postValue(list)
+    }
+
+
+    fun changeRecipientToken(token: String) = viewModelScope.launch {
+        repository.changeRecipientToken(token)
+    }
+
+    fun registerUserToken(userToken: UserToken, email: String) = viewModelScope.launch {
+        repository.registerUserToken(userToken, email)
     }
 
 }

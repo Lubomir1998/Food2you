@@ -1,15 +1,19 @@
 package com.example.food2you
 
 import android.app.Application
+import android.util.Log
 import com.example.food2you.data.local.ResDao
 import com.example.food2you.data.local.entities.Food
 import com.example.food2you.data.remote.models.Order
 import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.data.remote.ApiService
+import com.example.food2you.data.remote.FirebaseApi
 import com.example.food2you.data.remote.PushNotification
+import com.example.food2you.data.remote.UserToken
 import com.example.food2you.data.remote.requests.AccountRequest
 import com.example.food2you.data.remote.requests.AddPreviewRequest
 import com.example.food2you.data.remote.requests.LikeRestaurantRequest
+import com.example.food2you.data.remote.requests.RegisterUserRequest
 import com.example.food2you.other.Resource
 import com.example.food2you.other.hasInternetConnection
 import com.example.food2you.other.networkBoundResource
@@ -23,12 +27,13 @@ class Repository
 @Inject constructor(
     private val dao: ResDao,
     private val api: ApiService,
-    private val context: Application
+    private val context: Application,
+    private val firebaseApi: FirebaseApi
 ){
 
-    suspend fun register(email: String, password: String) = withContext(Dispatchers.IO) {
+    suspend fun register(email: String, password: String, token: String) = withContext(Dispatchers.IO) {
         try{
-            val response = api.register(AccountRequest(email, password))
+            val response = api.register(RegisterUserRequest(email, password, token))
             if(response.isSuccessful && response.body()!!.isSuccessful) {
                 Resource.success(response.body()?.message)
             } else {
@@ -214,8 +219,20 @@ class Repository
         return dao.getFoodForRestaurant(restaurant)
     }
 
+    suspend fun getAllWaitingOrdersForUser() = api.getAllWaitingOrdersForUser()
+
+    suspend fun changeRecipientToken(token: String) = api.changeOrderRecipientToken(token)
+
+
     // Firebase stuff
-    suspend fun registerUserToken(pushNotification: PushNotification, email: String) = api.registerUserToken(pushNotification, email)
+    suspend fun registerUserToken(userToken: UserToken, email: String) = api.registerUserToken(userToken, email)
+
+
+    suspend fun sendPushNotification(pushNotification: PushNotification) {
+        try {
+            firebaseApi.postNotification(pushNotification)
+        } catch (e: Exception) { }
+    }
 
 
 }

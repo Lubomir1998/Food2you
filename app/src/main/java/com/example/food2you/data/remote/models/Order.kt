@@ -10,6 +10,7 @@ data class Order(
     val restaurant: String,
     val address: String,
     val recipient: String,
+    val email: String,
     val phoneNumber: Long,
     val food: List<FoodItem>,
     val price: Float,

@@ -6,6 +6,7 @@ import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.data.remote.requests.AccountRequest
 import com.example.food2you.data.remote.requests.AddPreviewRequest
 import com.example.food2you.data.remote.requests.LikeRestaurantRequest
+import com.example.food2you.data.remote.requests.RegisterUserRequest
 import com.example.food2you.data.remote.resoponses.SimpleResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -16,7 +17,7 @@ import retrofit2.http.Path
 interface ApiService {
 
     @POST("/registerUser")
-    suspend fun register(@Body request: AccountRequest): Response<SimpleResponse>
+    suspend fun register(@Body request: RegisterUserRequest): Response<SimpleResponse>
 
     @POST("/login")
     suspend fun login(@Body request: AccountRequest): Response<SimpleResponse>
@@ -43,6 +44,12 @@ interface ApiService {
     suspend fun orderFood(@Body order: Order): Response<SimpleResponse>
 
     @POST("/registerUserToken/{user}")
-    suspend fun registerUserToken(@Body pushNotification: PushNotification, @Path("user") userEmail: String): Response<SimpleResponse>
+    suspend fun registerUserToken(@Body userToken: UserToken, @Path("user") userEmail: String): Response<SimpleResponse>
+
+    @GET("/getAllWaitingOrdersForUser")
+    suspend fun getAllWaitingOrdersForUser(): List<Order>
+
+    @POST("/changeOrderRecipientToken/{token}")
+    suspend fun changeOrderRecipientToken(@Path("token") token: String): Response<SimpleResponse>
 
 }

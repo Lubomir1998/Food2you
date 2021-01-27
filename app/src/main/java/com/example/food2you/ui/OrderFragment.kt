@@ -1,10 +1,6 @@
 package com.example.food2you.ui
 
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.os.Bundle
@@ -22,11 +18,9 @@ import com.example.food2you.adapters.OrderAdapter
 import com.example.food2you.data.remote.models.FoodItem
 import com.example.food2you.data.remote.models.Order
 import com.example.food2you.databinding.OrderFragmentBinding
-import com.example.food2you.notify.AlertReceiver
 import com.example.food2you.other.Constants.KEY_ADDRESS
-import com.example.food2you.other.Constants.KEY_TIMESTAMP
+import com.example.food2you.other.Constants.KEY_EMAIL
 import com.example.food2you.other.Constants.KEY_PHONE
-import com.example.food2you.other.Constants.KEY_RESTAURANT_ID
 import com.example.food2you.other.Constants.KEY_TOKEN
 import com.example.food2you.other.Status
 import com.example.food2you.viewmodels.OrderViewModel
@@ -34,7 +28,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.math.RoundingMode
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -250,9 +243,19 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
 
     private fun makeOrder() {
         val token = sharedPrefs.getString(KEY_TOKEN, "empty") ?: "empty"
-        val order = Order(args.restaurantOwner, binding.addressEt.text.toString(), token, binding.phoneEditText.text.toString().toLong(), fillFoodList(_list), orderPrice.toFloat() + args.deliveryPrice, System.currentTimeMillis(), "Waiting")
+        val order = Order(args.restaurantOwner, binding.addressEt.text.toString(), token, sharedPrefs.getString(
+            KEY_EMAIL, "NO_EMAIL") ?: "NO_EMAIL", binding.phoneEditText.text.toString().toLong(), fillFoodList(_list), orderPrice.toFloat() + args.deliveryPrice, System.currentTimeMillis(), "Waiting")
         viewModel.order(order)
         subscribeToObservers(order)
+    }
+
+    private fun sendPushNotificationToRestaurant() {
+//        viewModel.sendPushNotification(PushNotification(
+//            NotificationData(
+//                "New order", "Your have received a new order"
+//            ),
+//            currentOrder!!.recipient)
+//        )
     }
 
     private fun subscribeToObservers(order: Order) {
@@ -271,7 +274,7 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
 
 //                        val pendingIntent = PendingIntent.getBroadcast(requireContext(), order.timestamp.toInt(), intent, 0)
 //                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, order.timestamp + TimeUnit.MINUTES.toMillis(1), pendingIntent)
-
+                        sendPushNotificationToRestaurant()
 
                         val action = OrderFragmentDirections.actionOrderFragmentToPostOrderFragment(order, args.restaurantName, args.restaurantImgUrl)
                         val navOptions = NavOptions.Builder()

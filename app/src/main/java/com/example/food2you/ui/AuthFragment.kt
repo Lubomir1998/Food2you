@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,14 +12,19 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.food2you.R
+import com.example.food2you.data.remote.UserToken
 import com.example.food2you.databinding.AuthFragmentBinding
 import com.example.food2you.other.BasicAuthInterceptor
 import com.example.food2you.other.Constants.KEY_EMAIL
 import com.example.food2you.other.Constants.KEY_PASSWORD
+import com.example.food2you.other.Constants.KEY_TOKEN
 import com.example.food2you.other.Status
 import com.example.food2you.viewmodels.AuthViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -57,8 +63,9 @@ class AuthFragment: Fragment(R.layout.auth_fragment) {
             val email = binding.etRegisterEmail.text.toString()
             val password = binding.etRegisterPassword.text.toString()
             val confirmedPassword = binding.etRegisterPasswordConfirm.text.toString()
+            val token = sharedPrefs.getString(KEY_TOKEN, "") ?: ""
 
-            viewmodel.register(email, password, confirmedPassword)
+            viewmodel.register(email, password, confirmedPassword, token)
         }
 
         binding.btnLogin.setOnClickListener {
@@ -98,6 +105,11 @@ class AuthFragment: Fragment(R.layout.auth_fragment) {
                         binding.etRegisterPasswordConfirm.text?.clear()
 
                         showSnackBar(result.data ?: "Successfully created an account")
+
+//                        val token = sharedPrefs.getString(KEY_TOKEN, "") ?: ""
+//                        if(token.isNotEmpty()) {
+//                            viewmodel.registerUserToken(UserToken(token), currentEmail ?: "")
+//                        }
                     }
                     Status.ERROR -> {
                         binding.registerProgressBar.visibility = View.GONE
@@ -109,7 +121,7 @@ class AuthFragment: Fragment(R.layout.auth_fragment) {
 
         viewmodel.loginStatus.observe(viewLifecycleOwner, { result ->
             result?.let {
-                when(result.status) {
+                when (result.status) {
                     Status.LOADING -> {
                         binding.loginProgressBar.visibility = View.VISIBLE
                     }
@@ -124,6 +136,25 @@ class AuthFragment: Fragment(R.layout.auth_fragment) {
 
                         authenticateApi(currentEmail ?: "", currentPassword ?: "")
                         showSnackBar(result.data ?: "Successfully logged in")
+
+                        currentEmail?.let {
+                            val token = sharedPrefs.getString(KEY_TOKEN, "") ?: ""
+                            if (token.isNotEmpty()) {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    viewmodel.registerUserToken(UserToken(token), it)
+                                }
+                            }
+                        }
+
+                        viewmodel.getAllWaitingOrders()
+
+                        viewmodel.waitingOrdersLiveData.observe(viewLifecycleOwner, { waitingOrders ->
+                                for (order in waitingOrders) {
+                                    viewmodel.changeRecipientToken(sharedPrefs.getString(KEY_TOKEN, order.recipient) ?: order.recipient)
+                                }
+                            })
+
+
                         startActivity(Intent(requireContext(), MainActivity::class.java))
                     }
                     Status.ERROR -> {
