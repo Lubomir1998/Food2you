@@ -19,6 +19,7 @@ import com.example.food2you.other.Constants.Add_Preview_Action
 import com.example.food2you.other.Constants.KEY_EMAIL
 import com.example.food2you.other.Constants.KEY_RESTAURANT_ID
 import com.example.food2you.other.Constants.KEY_TOKEN
+import com.example.food2you.other.Constants.NO_EMAIL
 import com.google.firebase.iid.FirebaseInstanceId
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -65,7 +66,12 @@ class MainActivity : AppCompatActivity() {
         val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
 
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
-        toolbar.subtitle = email
+        toolbar.subtitle = if(email != NO_EMAIL) {
+            email
+        }
+        else {
+            ""
+        }
         toolbar.inflateMenu(R.menu.main_screen_toolbar)
         toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
@@ -73,7 +79,7 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.action_launch_fav_restaurants_fragment)
                 }
                 R.id.profileImg -> {
-                    if(email.isNotEmpty()) {
+                    if(email != NO_EMAIL) {
                         navController.navigate(R.id.action_launch_my_account_fragment)
                     }
                     else {

@@ -14,6 +14,7 @@ import com.example.food2you.adapters.RestaurantAdapter
 import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.databinding.FavRestaurantsFragmentBinding
 import com.example.food2you.other.Constants.KEY_EMAIL
+import com.example.food2you.other.Constants.NO_EMAIL
 import com.example.food2you.other.Status
 import com.example.food2you.viewmodels.RestaurantsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,9 +53,9 @@ class FavRestaurantsFragment: Fragment(R.layout.auth_fragment) {
 
         restaurantAdapter = RestaurantAdapter(requireContext(), listener)
 
-        val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
+        val email = sharedPrefs.getString(KEY_EMAIL, NO_EMAIL) ?: NO_EMAIL
 
-        if(email.isNotEmpty()) {
+        if(email != NO_EMAIL) {
             setupRecyclerView()
             viewModel.getFavouriteRestaurants()
             subscribeToObservers()
