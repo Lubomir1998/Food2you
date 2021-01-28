@@ -9,6 +9,7 @@ import com.example.food2you.Repository
 import com.example.food2you.data.remote.PushNotification
 import com.example.food2you.data.remote.models.Order
 import com.example.food2you.other.Resource
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class OrderViewModel
@@ -26,7 +27,7 @@ class OrderViewModel
         }
     }
 
-    fun sendPushNotification(pushNotification: PushNotification) = viewModelScope.launch {
+    fun sendPushNotification(pushNotification: PushNotification) = GlobalScope.launch {
         repository.sendPushNotification(pushNotification)
     }
 

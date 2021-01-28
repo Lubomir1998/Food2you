@@ -124,6 +124,10 @@
             android:name="restaurantImgUrl"
             app:argType="string"
             android:defaultValue="" />
+        <argument
+            android:name="token"
+            app:argType="string"
+            android:defaultValue=""/>
     </fragment>
     <fragment
         android:id="@+id/postOrderFragment"

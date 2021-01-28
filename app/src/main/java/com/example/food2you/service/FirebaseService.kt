@@ -12,6 +12,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
 import android.os.PowerManager
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.food2you.R
@@ -19,6 +20,7 @@ import com.example.food2you.Repository
 import com.example.food2you.data.remote.UserToken
 import com.example.food2you.other.Constants
 import com.example.food2you.other.Constants.CHANNEL_ID
+import com.example.food2you.other.Constants.NO_EMAIL
 import com.example.food2you.ui.MainActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -41,7 +43,7 @@ class FirebaseService: FirebaseMessagingService() {
     override fun onNewToken(newToken: String) {
         super.onNewToken(newToken)
 
-        val email = sharedPrefs.getString(Constants.KEY_EMAIL, "") ?: ""
+        val email = sharedPrefs.getString(Constants.KEY_EMAIL, NO_EMAIL) ?: NO_EMAIL
         val userToken = UserToken(newToken)
         sharedPrefs.edit().putString(Constants.KEY_TOKEN, newToken).apply()
 

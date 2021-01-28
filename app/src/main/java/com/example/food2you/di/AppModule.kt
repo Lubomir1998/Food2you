@@ -63,11 +63,13 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseApi() = Retrofit.Builder()
-        .baseUrl("https://fcm.googleapis.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-        .create(FirebaseApi::class.java)
+    fun provideFirebaseApi(): FirebaseApi{
+        return Retrofit.Builder()
+            .baseUrl("https://fcm.googleapis.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(FirebaseApi::class.java)
+    }
 
 
     @Singleton

@@ -22,6 +22,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
+
+private const val TAG = "Repository"
 
 class Repository
 @Inject constructor(
@@ -230,8 +233,10 @@ class Repository
 
     suspend fun sendPushNotification(pushNotification: PushNotification) {
         try {
+            Log.d(TAG, "############## try - before fun ")
             firebaseApi.postNotification(pushNotification)
-        } catch (e: Exception) { }
+            Log.d(TAG, "############## try - after fun ")
+        } catch (e: Exception) { Log.d(TAG, "############## catch $e ")  }
     }
 
 

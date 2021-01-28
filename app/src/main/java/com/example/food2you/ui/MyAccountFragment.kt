@@ -14,6 +14,7 @@ import com.example.food2you.other.Constants.KEY_ADDRESS
 import com.example.food2you.other.Constants.KEY_EMAIL
 import com.example.food2you.other.Constants.KEY_PASSWORD
 import com.example.food2you.other.Constants.KEY_PHONE
+import com.example.food2you.other.Constants.NO_EMAIL
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -83,9 +84,8 @@ class MyAccountFragment: Fragment(R.layout.auth_fragment) {
 
     private fun logout() {
         sharedPrefs.edit()
-            .putString(KEY_EMAIL, "")
+            .putString(KEY_EMAIL, NO_EMAIL)
             .putString(KEY_PASSWORD, "")
-            .putString(KEY_ADDRESS, "")
             .apply()
 
 //        findNavController().navigate(R.id.action_launch_main_fragment)

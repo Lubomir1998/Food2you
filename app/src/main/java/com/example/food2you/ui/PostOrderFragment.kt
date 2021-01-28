@@ -19,7 +19,7 @@ class PostOrderFragment: Fragment(R.layout.post_order_fragment) {
     private lateinit var binding: PostOrderFragmentBinding
     private val args: PostOrderFragmentArgs by navArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = PostOrderFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
