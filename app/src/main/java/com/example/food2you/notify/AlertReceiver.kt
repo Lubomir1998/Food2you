@@ -33,8 +33,9 @@ class AlertReceiver: BroadcastReceiver() {
 
         val id = intent?.getLongExtra(KEY_TIMESTAMP, 1) ?: 1
         val restaurantId = intent?.getStringExtra(KEY_RESTAURANT_ID) ?: ""
+        val name = intent?.getStringExtra("n") ?: "Review"
 
-        val notification = notificationHelper.createNotification(id, restaurantId)
+        val notification = notificationHelper.createNotification(id, restaurantId, name)
                 .build()
 
         notificationHelper.getManager().notify(id.toInt() + 1, notification)

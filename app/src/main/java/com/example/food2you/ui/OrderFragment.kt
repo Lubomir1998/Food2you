@@ -280,10 +280,11 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
                         val intent = Intent(requireContext(), AlertReceiver::class.java).also {
                             it.putExtra(KEY_TIMESTAMP, order.timestamp)
                             it.putExtra(KEY_RESTAURANT_ID, args.restaurantId)
+                            it.putExtra("n", args.restaurantName)
                         }
 
                         val pendingIntent = PendingIntent.getBroadcast(requireContext(), order.timestamp.toInt(), intent, 0)
-                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, order.timestamp + TimeUnit.MINUTES.toMillis(90), pendingIntent)
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, order.timestamp + TimeUnit.MINUTES.toMillis(1), pendingIntent)
 
                         val action = OrderFragmentDirections.actionOrderFragmentToPostOrderFragment(order, args.restaurantName, args.restaurantImgUrl)
                         val navOptions = NavOptions.Builder()

@@ -14,12 +14,15 @@ import com.example.food2you.NavGraphDirections
 import com.example.food2you.R
 import com.example.food2you.Repository
 import com.example.food2you.data.remote.UserToken
+import com.example.food2you.other.BasicAuthInterceptor
 import com.example.food2you.other.Constants
 import com.example.food2you.other.Constants.Add_Preview_Action
 import com.example.food2you.other.Constants.KEY_EMAIL
+import com.example.food2you.other.Constants.KEY_PASSWORD
 import com.example.food2you.other.Constants.KEY_RESTAURANT_ID
 import com.example.food2you.other.Constants.KEY_TOKEN
 import com.example.food2you.other.Constants.NO_EMAIL
+import com.example.food2you.other.Constants.NO_PASSWORD
 import com.google.firebase.iid.FirebaseInstanceId
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     @Inject lateinit var sharedPrefs: SharedPreferences
     @Inject lateinit var repository: Repository
+    @Inject lateinit var basicAuthInterceptor: BasicAuthInterceptor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,6 +115,14 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun goToAddPreviewFragmentIfNotificationIsTapped() {
+        val email = sharedPrefs.getString(KEY_EMAIL, NO_EMAIL) ?: NO_EMAIL
+        val password = sharedPrefs.getString(KEY_PASSWORD, NO_PASSWORD) ?: NO_PASSWORD
+
+        if(email != NO_EMAIL && password != NO_PASSWORD) {
+            basicAuthInterceptor.email = email
+            basicAuthInterceptor.password = password
+        }
+
         val restaurantId = intent?.getStringExtra(KEY_RESTAURANT_ID) ?: ""
         val action = NavGraphDirections.actionLaunchAddPreviewFragment(restaurantId)
         navController.navigate(action)

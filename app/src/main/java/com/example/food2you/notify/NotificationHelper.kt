@@ -42,7 +42,7 @@ class NotificationHelper(context: Context): ContextWrapper(context) {
     }
 
 
-    fun createNotification(notificationId: Long, restaurantId: String): NotificationCompat.Builder{
+    fun createNotification(notificationId: Long, restaurantId: String, title: String): NotificationCompat.Builder{
 
        val intent = Intent(applicationContext, MainActivity::class.java).also {
            it.action = Add_Preview_Action
@@ -55,7 +55,7 @@ class NotificationHelper(context: Context): ContextWrapper(context) {
         return NotificationCompat.Builder(this, chanelId)
                 .setAutoCancel(true)
                 .setOngoing(true)
-                .setContentTitle("Review")
+                .setContentTitle(title)
                 .setContentText("Tap to rate your order")
                 .setSmallIcon(R.drawable.my_restaurants_img)
                 .setContentIntent(mainActivityPendingIntent(intent, notificationId.toInt() + 1))
