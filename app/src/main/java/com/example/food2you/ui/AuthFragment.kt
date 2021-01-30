@@ -105,11 +105,6 @@ class AuthFragment: Fragment(R.layout.auth_fragment) {
                         binding.etRegisterPasswordConfirm.text?.clear()
 
                         showSnackBar(result.data ?: "Successfully created an account")
-
-//                        val token = sharedPrefs.getString(KEY_TOKEN, "") ?: ""
-//                        if(token.isNotEmpty()) {
-//                            viewmodel.registerUserToken(UserToken(token), currentEmail ?: "")
-//                        }
                     }
                     Status.ERROR -> {
                         binding.registerProgressBar.visibility = View.GONE

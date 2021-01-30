@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.food2you.NavGraphDirections
 import com.example.food2you.R
 import com.example.food2you.databinding.AddPreviewFragmentBinding
 import com.example.food2you.other.Status
@@ -59,7 +61,11 @@ class AddPreviewFragment: Fragment(R.layout.add_preview_fragment) {
 
                 when(result.status) {
                     Status.SUCCESS -> {
-                       findNavController().navigate(R.id.action_launch_main_fragment)
+                        val navOptions = NavOptions.Builder()
+                                .setPopUpTo(R.id.addPreviewFragment, true)
+                                .build()
+                        val action = NavGraphDirections.actionLaunchMainFragment()
+                        findNavController().navigate(action, navOptions)
                     }
                     Status.ERROR -> {
                         Snackbar.make(requireView(), result.message ?: "An unknown error occurred", Snackbar.LENGTH_LONG).show()
