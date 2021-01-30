@@ -51,7 +51,9 @@ class MainActivity : AppCompatActivity() {
 
             if(email.isNotEmpty()) {
                 CoroutineScope(Dispatchers.IO).launch {
-                    repository.registerUserToken(UserToken(it.token), email)
+                    try {
+                        repository.registerUserToken(UserToken(it.token), email)
+                    } catch (e: Exception) { }
                 }
             }
         }
