@@ -85,11 +85,11 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.action_launch_fav_restaurants_fragment)
                 }
                 R.id.profileImg -> {
-                    if(email != NO_EMAIL) {
-                        navController.navigate(R.id.action_launch_my_account_fragment)
+                    if(email == NO_EMAIL || email.isEmpty()) {
+                        navController.navigate(R.id.action_launch_auth_fragment)
                     }
                     else {
-                        navController.navigate(R.id.action_launch_auth_fragment)
+                        navController.navigate(R.id.action_launch_my_account_fragment)
                     }
                 }
             }

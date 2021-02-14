@@ -49,6 +49,9 @@ interface ApiService {
     @GET("/getAllWaitingOrdersForUser")
     suspend fun getAllWaitingOrdersForUser(): List<Order>
 
+    @GET("/getAllWaitingOrdersForUser")
+    suspend fun getAllWaitingOrdersForUserFlow(): Response<List<Order>>
+
     @POST("/changeOrderRecipientToken/{token}")
     suspend fun changeOrderRecipientToken(@Path("token") token: String): Response<SimpleResponse>
 

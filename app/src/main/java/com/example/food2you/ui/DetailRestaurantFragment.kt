@@ -23,6 +23,7 @@ import com.example.food2you.data.remote.models.FoodItems
 import com.example.food2you.databinding.DetailRestaurantFragmentBinding
 import com.example.food2you.other.Constants.KEY_EMAIL
 import com.example.food2you.other.Constants.KEY_RESTAURANT
+import com.example.food2you.other.Constants.NO_EMAIL
 import com.example.food2you.other.Status
 import com.example.food2you.other.hasInternetConnection
 import com.example.food2you.viewmodels.DetailRestaurantViewModel
@@ -70,6 +71,20 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
             override fun onFoodClicked(food: Food) {
                 binding.orderBar.visibility = View.VISIBLE
 
+                args.currentOrder?.let { order ->
+                    if(food.type == "Starter" || food.type == "Dessert" || food.type == "Drink") {
+                        val price = food.price
+                        val foodName = food.name
+
+                        viewModel.increasePrice(price)
+                        viewModel.addToList(FoodItem(foodName, price))
+                    }
+                    else {
+                        Snackbar.make(requireView(), "Choose only snacks and drinks", Snackbar.LENGTH_LONG).show()
+                    }
+                    return
+                }
+
                 val price = food.price
                 val foodName = food.name
 
@@ -78,6 +93,19 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
             }
         }
+
+        if(args.restaurantId.isNotEmpty()) {
+            viewModel.getRestaurantById(args.restaurantId)
+            subscribeToObservers()
+        }
+        else {
+            val sharedPrefId = sharedPrefs.getString(KEY_RESTAURANT, "") ?: ""
+            if(sharedPrefId.isNotEmpty()) {
+                viewModel.getRestaurantById(sharedPrefId)
+                subscribeToObservers()
+            }
+        }
+
 
         viewModel.orderPrice.observe(viewLifecycleOwner, {
             val floatPrice = it.toBigDecimal().setScale(2, RoundingMode.FLOOR).toFloat()
@@ -99,6 +127,21 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
             val list = FoodItems().also {
                 it.addAll(orderList)
             }
+
+            val address = if(args.currentOrder != null) {
+                args.currentOrder!!.address
+            }
+            else {
+                ""
+            }
+
+            val phone = if(args.currentOrder != null) {
+                args.currentOrder!!.phoneNumber
+            }
+            else {
+                ""
+            }
+
             val action = DetailRestaurantFragmentDirections.actionDetailRestaurantFragmentToOrderFragment(
                     orderPrice.toBigDecimal().setScale(2, RoundingMode.FLOOR).toFloat(),
                     list,
@@ -108,25 +151,17 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                     currentRestaurant!!.name,
                     args.restaurantId,
                     currentRestaurant!!.imgUrl,
-                    currentRestaurant!!.token
+                    currentRestaurant!!.token,
+                    args.currentOrder?.id ?: "",
+                    address,
+                    phone,
+                    args.currentOrder
                 )
             findNavController().navigate(action)
         }
 
         foodAdapter = FoodAdapter(requireContext(), listener)
         setUpRecyclerView()
-
-        if(args.restaurantId.isNotEmpty()) {
-            viewModel.getRestaurantById(args.restaurantId)
-            subscribeToObservers()
-        }
-        else {
-            val sharedPrefId = sharedPrefs.getString(KEY_RESTAURANT, "") ?: ""
-            if(sharedPrefId.isNotEmpty()) {
-                viewModel.getRestaurantById(sharedPrefId)
-                subscribeToObservers()
-            }
-        }
 
 
         binding.chipGroup.setOnCheckedChangeListener { group, checkedId ->
@@ -176,7 +211,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
         binding.favButton.setOnClickListener {
 
             if(hasInternetConnection(requireContext())) {
-                if (email.isNotEmpty()) {
+                if (email.isNotEmpty() || email == NO_EMAIL) {
                     if (currentRestaurant?.users?.contains(email) == true) {
                         viewModel.dislikeRestaurant(
                                 args.restaurantId,
@@ -241,26 +276,34 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                     Status.SUCCESS -> {
                         currentRestaurant = result.data
 
+                        args.currentOrder?.let { order ->
+                            viewModel.increasePrice(order.price - currentRestaurant!!.deliveryPrice)
+                            order.food.forEach { foodItem ->
+                                for (i in 1..foodItem.quantity) {
+                                    val price = foodItem.price / foodItem.quantity
+                                    viewModel.addToList(FoodItem(foodItem.name, price))
+                                }
+                            }
+
+                        }
+
                         sharedPrefs.edit().putString(KEY_RESTAURANT, currentRestaurant!!.id).apply()
 
                         val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
 
-                        if(currentRestaurant!!.users.contains(email)) {
+                        if (currentRestaurant!!.users.contains(email)) {
                             binding.favButton.setImageResource(R.drawable.fav_img)
-                        }
-                        else {
+                        } else {
                             binding.favButton.setImageResource(R.drawable.not_fav_img)
                         }
 
 
                         binding.titleTextView.text = currentRestaurant!!.name
-                        binding.reviewsTextView.text = if(currentRestaurant!!.previews.size == 1) {
+                        binding.reviewsTextView.text = if (currentRestaurant!!.previews.size == 1) {
                             "1 review"
-                        }
-                        else if(currentRestaurant!!.previews.isEmpty()) {
+                        } else if (currentRestaurant!!.previews.isEmpty()) {
                             "No reviews"
-                        }
-                        else {
+                        } else {
                             "${currentRestaurant!!.previews.size} reviews"
                         }
 
@@ -273,11 +316,11 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
                         subscribeToFoodList()
 
-
                     }
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { error ->
-                            Snackbar.make(requireView(), error.message ?: "Something went wrong", Snackbar.LENGTH_LONG).show()
+                            Snackbar.make(requireView(), error.message
+                                    ?: "Something went wrong", Snackbar.LENGTH_LONG).show()
                         }
                     }
                     Status.LOADING -> {

@@ -9,7 +9,7 @@ class BasicAuthInterceptor: Interceptor {
     var email: String? = null
     var password: String? = null
 
-    private val ignoreAuthPaths = listOf("/registerUser", "/login", "/getAllRestaurants", "/getFood/{restaurant}")
+    private val ignoreAuthPaths = listOf("/registerUser", "/login", "/getAllRestaurants", "/getFood/{restaurant}", "/order")
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()

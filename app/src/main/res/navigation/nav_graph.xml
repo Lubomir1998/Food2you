@@ -65,6 +65,11 @@
         <action
             android:id="@+id/action_detailRestaurantFragment_to_previewsFragment"
             app:destination="@id/previewsFragment" />
+        <argument
+            android:name="currentOrder"
+            app:argType="com.example.food2you.data.remote.models.Order"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/favRestaurantsFragment"
@@ -84,7 +89,11 @@
     <fragment
         android:id="@+id/myAccountFragment"
         android:name="com.example.food2you.ui.MyAccountFragment"
-        android:label="My Account" />
+        android:label="My Account" >
+        <action
+            android:id="@+id/action_myAccountFragment_to_waitingOrdersFragment"
+            app:destination="@id/allOrdersFragment" />
+    </fragment>
     <fragment
         android:id="@+id/orderFragment"
         android:name="com.example.food2you.ui.OrderFragment"
@@ -128,22 +137,39 @@
             android:name="token"
             app:argType="string"
             android:defaultValue=""/>
+        <argument
+            android:name="orderId"
+            app:argType="string"
+            android:defaultValue=""/>
+        <argument
+            android:name="orderAddress"
+            app:argType="string"
+            android:defaultValue=""/>
+        <argument
+            android:name="orderPhone"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="currentOrder"
+            app:argType="com.example.food2you.data.remote.models.Order"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/postOrderFragment"
         android:name="com.example.food2you.ui.PostOrderFragment"
-        android:label="PostOrderFragment" >
+        android:label="Post order">
         <argument
             android:name="order"
             app:argType="com.example.food2you.data.remote.models.Order" />
         <argument
             android:name="restaurantName"
-            app:argType="string"
-            android:defaultValue=""/>
+            android:defaultValue=""
+            app:argType="string" />
         <argument
             android:name="imgUrl"
-            app:argType="string"
-            android:defaultValue="" />
+            android:defaultValue=""
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/addPreviewFragment"
@@ -161,5 +187,16 @@
         <argument
             android:name="restaurant"
             app:argType="com.example.food2you.data.local.entities.Restaurant" />
+    </fragment>
+    <fragment
+        android:id="@+id/allOrdersFragment"
+        android:name="com.example.food2you.ui.AllOrdersFragment"
+        android:label="All orders">
+        <action
+            android:id="@+id/action_allOrdersFragment_to_postOrderFragment"
+            app:destination="@id/postOrderFragment" />
+        <action
+            android:id="@+id/action_allOrdersFragment_to_detailRestaurantFragment"
+            app:destination="@id/detailRestaurantFragment" />
     </fragment>
 </navigation>

@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MyAccountFragment: Fragment(R.layout.auth_fragment) {
+class MyAccountFragment: Fragment(R.layout.my_account_fragment) {
 
     private lateinit var binding: MyAccountFragmentBinding
 
@@ -42,11 +42,11 @@ class MyAccountFragment: Fragment(R.layout.auth_fragment) {
 
 
         val address = sharedPrefs.getString(KEY_ADDRESS, "") ?: ""
-        val phone = sharedPrefs.getLong(KEY_PHONE, 0L)
+        val phone = sharedPrefs.getString(KEY_PHONE, "") ?: ""
 
 
         binding.saveAddressEt.setText(address)
-        if(phone != 0L) {
+        if(phone.isNotEmpty()) {
             binding.phoneNumberEt.setText(phone.toString())
         }
 
@@ -54,7 +54,7 @@ class MyAccountFragment: Fragment(R.layout.auth_fragment) {
             if(binding.saveAddressEt.text?.isNotEmpty() == true && binding.phoneNumberEt.text?.isNotEmpty() == true) {
                 sharedPrefs.edit()
                         .putString(KEY_ADDRESS, binding.saveAddressEt.text.toString())
-                        .putLong(KEY_PHONE, binding.phoneNumberEt.text.toString().toLong())
+                        .putString(KEY_PHONE, binding.phoneNumberEt.text.toString())
                         .apply()
                 Snackbar.make(requireView(), "Info saved", Snackbar.LENGTH_LONG).show()
             }
@@ -66,7 +66,7 @@ class MyAccountFragment: Fragment(R.layout.auth_fragment) {
             }
             else if(binding.saveAddressEt.text?.isNotEmpty() == false && binding.phoneNumberEt.text?.isNotEmpty() == true) {
                 sharedPrefs.edit()
-                        .putLong(KEY_PHONE, binding.phoneNumberEt.text.toString().toLong())
+                        .putString(KEY_PHONE, binding.phoneNumberEt.text.toString())
                         .apply()
                 Snackbar.make(requireView(), "Phone saved", Snackbar.LENGTH_LONG).show()
             }
@@ -79,6 +79,10 @@ class MyAccountFragment: Fragment(R.layout.auth_fragment) {
             logout()
         }
 
+        binding.button222.setOnClickListener {
+            findNavController().navigate(R.id.action_myAccountFragment_to_waitingOrdersFragment)
+        }
+
     }
 
 
@@ -88,7 +92,6 @@ class MyAccountFragment: Fragment(R.layout.auth_fragment) {
             .putString(KEY_PASSWORD, "")
             .apply()
 
-//        findNavController().navigate(R.id.action_launch_main_fragment)
         startActivity(Intent(requireContext(), MainActivity::class.java))
     }
 

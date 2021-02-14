@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import javax.inject.Inject
-import kotlin.coroutines.cancellation.CancellationException
 
 private const val TAG = "Repository"
 
@@ -64,6 +63,7 @@ class Repository
         try {
             val response = api.orderFood(order)
             if(response.isSuccessful && response.body()!!.isSuccessful) {
+                dao.insertOrder(order)
                 Resource.success(response.body()?.message)
             }
             else {
@@ -94,21 +94,54 @@ class Repository
 
     fun getAllRestaurants(): Flow<Resource<List<Restaurant>>> {
         return networkBoundResource(
-            query = {
-                dao.getAllRestaurants()
-            },
-            fetch = {
-                sync()
-                currentResponse
-            },
-            savedFetchResult = {
-                it?.body()?.let { restaurants ->
-                    restaurants.forEach { dao.insertRes(it) }
+                query = {
+                    dao.getAllRestaurants()
+                },
+                fetch = {
+                    sync()
+                    currentResponse
+                },
+                savedFetchResult = {
+                    it?.body()?.let { restaurants ->
+                        restaurants.forEach { dao.insertRes(it) }
+                    }
+                },
+                shouldFetch = {
+                    hasInternetConnection(context)
                 }
-            },
-            shouldFetch = {
-                hasInternetConnection(context)
+        )
+    }
+
+    private var currentOrderResponse: Response<List<Order>>? = null
+
+    private suspend fun syncOrders() {
+        currentOrderResponse = api.getAllWaitingOrdersForUserFlow()
+        currentOrderResponse?.body()?.let { orders ->
+            dao.deleteAllOrders()
+            orders.forEach {
+                dao.insertOrder(it)
             }
+        }
+
+    }
+
+    fun getAllOrders(): Flow<Resource<List<Order>>> {
+        return networkBoundResource(
+                query = {
+                    dao.getAllOrdersForUser()
+                },
+                fetch = {
+                    syncOrders()
+                    currentOrderResponse
+                },
+                savedFetchResult = {
+                    it?.body()?.let { orders ->
+                        orders.forEach { dao.insertOrder(it) }
+                    }
+                },
+                shouldFetch = {
+                    hasInternetConnection(context)
+                }
         )
     }
 
@@ -233,10 +266,8 @@ class Repository
 
     suspend fun sendPushNotification(pushNotification: PushNotification) {
         try {
-            Log.d(TAG, "############## try - before fun ")
             firebaseApi.postNotification(pushNotification)
-            Log.d(TAG, "############## try - after fun ")
-        } catch (e: Exception) { Log.d(TAG, "############## catch $e ")  }
+        } catch (e: Exception) {  }
     }
 
 

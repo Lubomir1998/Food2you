@@ -8,10 +8,11 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
@@ -38,7 +39,9 @@ import com.example.food2you.viewmodels.OrderViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.channels.consumesAll
 import java.math.RoundingMode
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -53,6 +56,7 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
     var list: MutableList<FoodItem> = mutableListOf()
     var _list: MutableList<FoodItem> = mutableListOf()
     private var orderPrice: String = ""
+    private var currentFoodList: MutableList<FoodItem>? = null
 
     @Inject lateinit var sharedPrefs: SharedPreferences
 
@@ -84,9 +88,18 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
                 orderPrice = calculateOrderPrice(_list)
                 showWarningMessageIfPriceNotEnough(orderPrice.toFloat())
                 showPrices(orderPrice, args.deliveryPrice.toBigDecimal().setScale(2, RoundingMode.FLOOR).toFloat())
+
+                currentFoodList = fillFoodList(_list)
+
             }
 
             override fun plusClicked(foodItem: FoodItem) {
+
+                if(args.currentOrder != null) {
+                    Snackbar.make(requireView(), "You can't add meals from this page", Snackbar.LENGTH_LONG).show()
+                    return
+                }
+
                 val price = foodItem.price / foodItem.quantity
                 val item = FoodItem(foodItem.name, price)
 
@@ -97,6 +110,8 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
                 orderPrice = calculateOrderPrice(_list)
                 showWarningMessageIfPriceNotEnough(orderPrice.toFloat())
                 showPrices(orderPrice, args.deliveryPrice.toBigDecimal().setScale(2, RoundingMode.FLOOR).toFloat())
+
+                currentFoodList = fillFoodList(_list)
             }
         }
 
@@ -117,11 +132,21 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
         showPrices(orderPrice, deliveryPrice)
 
 
-        val address = sharedPrefs.getString(KEY_ADDRESS, "") ?: ""
+        val address = if(args.orderAddress.isEmpty()) {
+            sharedPrefs.getString(KEY_ADDRESS, "") ?: ""
+        }
+        else {
+            args.orderAddress
+        }
         binding.addressEt.setText(address)
 
-        val phone = sharedPrefs.getLong(KEY_PHONE, 0L)
-        if(phone != 0L) {
+        val phone = if(args.orderPhone.isNotEmpty()) {
+            args.orderPhone
+        }
+        else {
+            sharedPrefs.getString(KEY_PHONE, "") ?: ""
+        }
+        if(phone.isNotEmpty()) {
             binding.phoneEditText.setText(phone.toString())
         }
 
@@ -131,23 +156,70 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
 
         binding.orderBtn.setOnClickListener {
             if(binding.addressEt.text.toString().isNotEmpty() && binding.phoneEditText.text.toString().isNotEmpty()) {
-                val dialog = MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("Make order?")
-                        .setMessage("Are you sure you want to make this order?")
-                        .setPositiveButton("Yes") { _, _ ->
-                            makeOrder()
-                        }
-                        .setNegativeButton("Cancel") { dialogInterface, _ ->
-                            dialogInterface.cancel()
-                        }
-                        .create()
+                if(args.currentOrder != null  && args.currentOrder!!.food == fillFoodList(_list)) {
+                    Snackbar.make(requireView(), "Order is not updated", Snackbar.LENGTH_LONG).show()
+                }
+                else {
+                    val dialog = MaterialAlertDialogBuilder(requireContext())
+                            .setTitle("Make order?")
+                            .setMessage("Are you sure you want to make this order?")
+                            .setPositiveButton("Yes") { _, _ ->
+                                makeOrder()
+                            }
+                            .setNegativeButton("Cancel") { dialogInterface, _ ->
+                                dialogInterface.cancel()
+                            }
+                            .create()
 
-                dialog.show()
+                    dialog.show()
+                }
             }
             else {
                 Snackbar.make(requireView(), "Empty fields", Snackbar.LENGTH_LONG).show()
             }
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val navOptions = NavOptions.Builder()
+                        .setPopUpTo(R.id.orderFragment, true)
+                        .setPopUpTo(R.id.detailRestaurantFragment, true)
+                        .build()
+
+                val phone1 = if(binding.phoneEditText.text.toString().isNotEmpty()) {
+                    binding.phoneEditText.text.toString()
+                }
+                else {
+                    ""
+                }
+
+                val id = if(args.orderId.isNotEmpty()) {
+                    args.orderId
+                } else {
+                    UUID.randomUUID().toString()
+                }
+
+                val action = OrderFragmentDirections.actionOrderFragmentToDetailRestaurantFragment(args.restaurantId, args.restaurantName, Order(
+                        args.restaurantOwner,
+                        binding.addressEt.text.toString(),
+                        sharedPrefs.getString(KEY_TOKEN, "empty") ?: "empty",
+                        sharedPrefs.getString(KEY_EMAIL, NO_EMAIL) ?: NO_EMAIL,
+                        phone1,
+                        fillFoodList(_list),
+                        orderPrice.toFloat() + args.deliveryPrice,
+                        System.currentTimeMillis(),
+                        "Waiting",
+                        args.restaurantImgUrl,
+                        args.restaurantName,
+                        resId = args.restaurantId,
+                        id = id
+                )
+                )
+
+                findNavController().navigate(action, navOptions)
+            }
+        })
+
 
         binding.closeImg.setOnClickListener {
             val navOptions = NavOptions.Builder()
@@ -155,7 +227,34 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
                 .setPopUpTo(R.id.detailRestaurantFragment, true)
                 .build()
 
-            val action = OrderFragmentDirections.actionOrderFragmentToDetailRestaurantFragment(args.restaurantId, args.restaurantName)
+            val phone1 = if(binding.phoneEditText.text.toString().isNotEmpty()) {
+                binding.phoneEditText.text.toString()
+            }
+            else {
+                ""
+            }
+            val id = if(args.orderId.isNotEmpty()) {
+                args.orderId
+            } else {
+                UUID.randomUUID().toString()
+            }
+
+            val action = OrderFragmentDirections.actionOrderFragmentToDetailRestaurantFragment(args.restaurantId, args.restaurantName, Order(
+                    args.restaurantOwner,
+                    binding.addressEt.text.toString(),
+                    sharedPrefs.getString(KEY_TOKEN, "empty") ?: "empty",
+                    sharedPrefs.getString(KEY_EMAIL, NO_EMAIL) ?: NO_EMAIL,
+                    phone1,
+                    fillFoodList(_list),
+                    orderPrice.toFloat() + args.deliveryPrice,
+                    System.currentTimeMillis(),
+                    "Waiting",
+                    args.restaurantImgUrl,
+                    args.restaurantName,
+                    resId = args.restaurantId,
+                    id = id
+            )
+            )
 
             findNavController().navigate(action, navOptions)
         }
@@ -255,14 +354,47 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
 
     private fun makeOrder() {
         val token = sharedPrefs.getString(KEY_TOKEN, "empty") ?: "empty"
-        val order = Order(args.restaurantOwner, binding.addressEt.text.toString(), token, sharedPrefs.getString(
-            KEY_EMAIL, NO_EMAIL) ?: NO_EMAIL, binding.phoneEditText.text.toString().toLong(), fillFoodList(_list), orderPrice.toFloat() + args.deliveryPrice, System.currentTimeMillis(), "Waiting")
+        val id = if(args.orderId.isNotEmpty()) {
+            args.orderId
+        } else {
+            UUID.randomUUID().toString()
+        }
+        val order = Order(
+                args.restaurantOwner,
+                binding.addressEt.text.toString(),
+                token,
+                sharedPrefs.getString(KEY_EMAIL, NO_EMAIL) ?: NO_EMAIL,
+                binding.phoneEditText.text.toString(),
+                fillFoodList(_list),
+                orderPrice.toFloat() + args.deliveryPrice,
+                System.currentTimeMillis(),
+                "Waiting",
+                args.restaurantImgUrl,
+                args.restaurantName,
+                resId = args.restaurantId,
+                id = id
+        )
         viewModel.order(order)
         subscribeToObservers(order)
     }
 
     private fun sendPushNotificationToRestaurant() {
-        viewModel.sendPushNotification(PushNotification(NotificationData("New order", "Your have received a new order"), args.token))
+        val title = if(args.orderId.isNotEmpty()) {
+            "Order Update"
+        }
+        else {
+            "New order"
+        }
+
+        val message = if(args.orderId.isNotEmpty()) {
+            "An order has been updated"
+        }
+        else {
+            "You have received a new order"
+        }
+
+        val topic = args.restaurantOwner.replace("[^A-Za-z0-9.]".toRegex(), "-")
+        viewModel.sendPushNotification(PushNotification(NotificationData(title, message), "/topics/$topic"))
     }
 
     private fun subscribeToObservers(order: Order) {
