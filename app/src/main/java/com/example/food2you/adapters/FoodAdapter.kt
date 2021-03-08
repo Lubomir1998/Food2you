@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -12,43 +13,21 @@ import com.example.food2you.databinding.FoodItemBinding
 
 class FoodAdapter(private val context: Context, private val listener: OnFoodClickListener): RecyclerView.Adapter<FoodAdapter.MyViewHolder>() {
 
-    private var list = mutableListOf<Food>()
-
-    class FoodDiffUtil(
-        var oldList: List<Food>,
-        var newList: List<Food>
-    ) : DiffUtil.Callback(){
-
-        override fun getOldListSize(): Int {
-            return oldList.size
+    private val diffCallback = object : DiffUtil.ItemCallback<Food>() {
+        override fun areItemsTheSame(oldItem: Food, newItem: Food): Boolean {
+            return oldItem.id == newItem.id
         }
 
-        override fun getNewListSize(): Int {
-            return newList.size
+        override fun areContentsTheSame(oldItem: Food, newItem: Food): Boolean {
+            return oldItem.hashCode() == newItem.hashCode()
         }
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].id == newList[newItemPosition].id
-        }
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition] == newList[newItemPosition]
-        }
-
     }
 
-    fun displayData(meals: List<Food>) {
-        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(
-            FoodDiffUtil(
-                list,
-                meals
-            )
-        )
-        list.clear()
-        list.addAll(meals)
-        diffResult.dispatchUpdatesTo(this)
-    }
+    private val differ = AsyncListDiffer(this, diffCallback)
 
+    var meals: List<Food>
+        get() = differ.currentList
+        set(value) = differ.submitList(value)
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -58,7 +37,7 @@ class FoodAdapter(private val context: Context, private val listener: OnFoodClic
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val food = list[position]
+        val food = meals[position]
 
         holder.nameTextView.text = food.name
         holder.descriptionTextView.text = food.description
@@ -75,25 +54,25 @@ class FoodAdapter(private val context: Context, private val listener: OnFoodClic
 
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount(): Int = meals.size
 
 
-    fun formattedStringPrice(price: String): String {
-
-        val stotinki: String
-
-        if(price.contains(".")) {
-            val leva = price.split(".")[0]
-            stotinki = price.split(".")[1]
-
-            if(stotinki.length == 1) {
-                return "${leva}.${stotinki}0"
-            }
-            return price
-        }
-
-        return "${price}.00"
-    }
+//    fun formattedStringPrice(price: String): String {
+//
+//        val stotinki: String
+//
+//        if(price.contains(".")) {
+//            val leva = price.split(".")[0]
+//            stotinki = price.split(".")[1]
+//
+//            if(stotinki.length == 1) {
+//                return "${leva}.${stotinki}0"
+//            }
+//            return price
+//        }
+//
+//        return "${price}.00"
+//    }
 
     class MyViewHolder(itemView: FoodItemBinding): RecyclerView.ViewHolder(itemView.root) {
         val nameTextView = itemView.nameTextView

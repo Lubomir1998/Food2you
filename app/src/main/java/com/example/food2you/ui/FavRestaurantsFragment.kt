@@ -103,7 +103,7 @@ class FavRestaurantsFragment: Fragment(R.layout.auth_fragment) {
 
                             binding.recyclerView.visibility = View.VISIBLE
 
-                            restaurantAdapter.displayData(list)
+                            restaurantAdapter.restaurants = list
                         } else {
                             binding.button.visibility = View.VISIBLE
                             binding.textView.visibility = View.VISIBLE

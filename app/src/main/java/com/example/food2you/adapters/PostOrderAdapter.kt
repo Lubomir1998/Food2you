@@ -27,22 +27,22 @@ class PostOrderAdapter(private val list: List<FoodItem>): RecyclerView.Adapter<P
     override fun getItemCount(): Int = list.size
 
 
-    fun formattedStringPrice(price: String): String {
-
-        val stotinki: String
-
-        if(price.contains(".")) {
-            val leva = price.split(".")[0]
-            stotinki = price.split(".")[1]
-
-            if(stotinki.length == 1) {
-                return "${leva}.${stotinki}0"
-            }
-            return price
-        }
-
-        return "${price}.00"
-    }
+//    fun formattedStringPrice(price: String): String {
+//
+//        val stotinki: String
+//
+//        if(price.contains(".")) {
+//            val leva = price.split(".")[0]
+//            stotinki = price.split(".")[1]
+//
+//            if(stotinki.length == 1) {
+//                return "${leva}.${stotinki}0"
+//            }
+//            return price
+//        }
+//
+//        return "${price}.00"
+//    }
 
     class MyViewHolder(itemView: PostOrderItemBinding): RecyclerView.ViewHolder(itemView.root) {
         val foodNameTextView = itemView.foodNameTextView

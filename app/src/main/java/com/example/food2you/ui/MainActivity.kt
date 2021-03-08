@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
             sharedPrefs.edit().putString(KEY_TOKEN, it.token).apply()
 
-            val email = sharedPrefs.getString(Constants.KEY_EMAIL, "") ?: ""
+            val email = sharedPrefs.getString(KEY_EMAIL, "") ?: ""
 
             if(email.isNotEmpty()) {
                 CoroutineScope(Dispatchers.IO).launch {

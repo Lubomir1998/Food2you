@@ -245,7 +245,7 @@ class Repository
         }
         result?.let { response ->
             response.body()?.let {
-                dao.deleteAllFood()
+//                dao.deleteAllFood()
                 it.forEach {
                     insertFood(it)
                 }

@@ -74,22 +74,22 @@ class UserOrderAdapter(val context: Context, val listener: OnOrderClickListener)
     override fun getItemCount(): Int = orders.size
 
 
-    fun formattedStringPrice(price: String): String {
-
-        val stotinki: String
-
-        if(price.contains(".")) {
-            val leva = price.split(".")[0]
-            stotinki = price.split(".")[1]
-
-            if(stotinki.length == 1) {
-                return "${leva}.${stotinki}0"
-            }
-            return price
-        }
-
-        return "${price}.00"
-    }
+//    fun formattedStringPrice(price: String): String {
+//
+//        val stotinki: String
+//
+//        if(price.contains(".")) {
+//            val leva = price.split(".")[0]
+//            stotinki = price.split(".")[1]
+//
+//            if(stotinki.length == 1) {
+//                return "${leva}.${stotinki}0"
+//            }
+//            return price
+//        }
+//
+//        return "${price}.00"
+//    }
 
     class MyViewHolder(itemView: MyOrderItemBinding): RecyclerView.ViewHolder(itemView.root) {
         val resImage = itemView.logoImg

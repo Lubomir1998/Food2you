@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.food2you.R
 import com.example.food2you.adapters.FoodAdapter
+import com.example.food2you.adapters.formattedStringPrice
 import com.example.food2you.data.local.entities.Food
 import com.example.food2you.data.local.entities.Restaurant
 import com.example.food2you.data.remote.models.FoodItem
@@ -71,7 +71,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
             override fun onFoodClicked(food: Food) {
                 binding.orderBar.visibility = View.VISIBLE
 
-                args.currentOrder?.let { order ->
+                args.currentOrder?.let {
                     if(food.type == "Starter" || food.type == "Dessert" || food.type == "Drink") {
                         val price = food.price
                         val foodName = food.name
@@ -109,7 +109,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
         viewModel.orderPrice.observe(viewLifecycleOwner, {
             val floatPrice = it.toBigDecimal().setScale(2, RoundingMode.FLOOR).toFloat()
-            binding.orderPriceTextView.text = foodAdapter.formattedStringPrice(floatPrice.toString()) + " EUR"
+            binding.orderPriceTextView.text = formattedStringPrice(floatPrice.toString()) + " EUR"
             orderPrice = it
         })
 
@@ -182,7 +182,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                     viewModel.filter(chip?.text.toString())
                     subscribeFilterLiveData()
                 } else {
-                    foodAdapter.displayData(currentList!!)
+                    foodAdapter.meals = currentList!!
                 }
 
             }
@@ -211,17 +211,17 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
         binding.favButton.setOnClickListener {
 
             if(hasInternetConnection(requireContext())) {
-                if (email.isNotEmpty() || email == NO_EMAIL) {
+                if (email.isNotEmpty() && email != NO_EMAIL) {
                     if (currentRestaurant?.users?.contains(email) == true) {
                         viewModel.dislikeRestaurant(
                                 args.restaurantId,
-                                sharedPrefs.getString(KEY_EMAIL, "") ?: ""
+                                email
                         )
                         subscribeToLikeObservers()
                     } else {
                         viewModel.likeRestaurant(
                                 args.restaurantId,
-                                sharedPrefs.getString(KEY_EMAIL, "") ?: ""
+                                email
                         )
                         subscribeToLikeObservers()
                     }
@@ -299,12 +299,11 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
 
                         binding.titleTextView.text = currentRestaurant!!.name
-                        binding.reviewsTextView.text = if (currentRestaurant!!.previews.size == 1) {
-                            "1 review"
-                        } else if (currentRestaurant!!.previews.isEmpty()) {
-                            "No reviews"
-                        } else {
-                            "${currentRestaurant!!.previews.size} reviews"
+
+                        binding.reviewsTextView.text = when {
+                            currentRestaurant!!.previews.size == 1 -> "1 review"
+                            currentRestaurant!!.previews.isEmpty() -> "No reviews"
+                            else -> "${currentRestaurant!!.previews.size} reviews"
                         }
 
                         Glide
@@ -341,8 +340,9 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                 when(result.status) {
                     Status.SUCCESS -> {
                         binding.progressBar2.visibility = View.GONE
+                        binding.recyclerView.visibility = View.VISIBLE
                         currentList = result.data
-                        foodAdapter.displayData(currentList!!)
+                        foodAdapter.meals = currentList!!
 
                         binding.chipGroup.removeAllViews()
                         binding.chipGroup.clearCheck()
@@ -372,7 +372,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
                             }
                         }
                         result.data?.let {
-                            foodAdapter.displayData(it)
+                            foodAdapter.meals = it
                         }
                     }
                     Status.LOADING -> {
@@ -393,7 +393,7 @@ class DetailRestaurantFragment: Fragment(R.layout.detail_restaurant_fragment) {
 
     private fun subscribeFilterLiveData() {
         viewModel.filteredFood.observe(viewLifecycleOwner, {
-            foodAdapter.displayData(it)
+            foodAdapter.meals = it
         })
     }
 

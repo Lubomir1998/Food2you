@@ -95,7 +95,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
                     subscribeFilterLiveData()
                 }
                 else {
-                    restaurantAdapter.displayData(currentList!!)
+                    restaurantAdapter.restaurants = currentList!!
                 }
 
             }
@@ -123,7 +123,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
 
     private fun subscribeFilterLiveData() {
         viewModel.filteredRestaurants.observe(viewLifecycleOwner, {
-            restaurantAdapter.displayData(it)
+            restaurantAdapter.restaurants = it
         })
     }
 
@@ -137,7 +137,7 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
                     Status.SUCCESS -> {
                         binding.progressBar.visibility = View.GONE
                         binding.recyclerView.visibility = View.VISIBLE
-                        restaurantAdapter.displayData(result.data!!)
+                        restaurantAdapter.restaurants = result.data!!
                         currentList = result.data
 
                         binding.orderTextView.text = "Order from ${result.data.size} restaurants"
@@ -163,13 +163,15 @@ class RestaurantsFragment: Fragment(R.layout.restaurants_fragment) {
                     Status.ERROR -> {
                         binding.progressBar.visibility = View.GONE
                         binding.recyclerView.visibility = View.VISIBLE
+                        binding.orderTextView.text = ""
                         event.getContentIfNotHandled()?.let { error ->
                             error.message?.let { message ->
                                 Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show()
                             }
                         }
                         result.data?.let {
-                            restaurantAdapter.displayData(it)
+                            restaurantAdapter.restaurants = it
+                            binding.orderTextView.text = "Order from ${it.size} restaurants"
                         }
                     }
                     Status.LOADING -> {
