@@ -50,6 +50,10 @@ class AllOrdersFragment: Fragment(R.layout.all_orders_fragment) {
                 val action = AllOrdersFragmentDirections.actionAllOrdersFragmentToDetailRestaurantFragment(order.resId, order.restaurantName, order)
                 findNavController().navigate(action)
             }
+
+            override fun onTrackButtonClicked(order: Order) {
+                findNavController().navigate(AllOrdersFragmentDirections.actionAllOrdersFragmentToTrackOrderFragment(order.id))
+            }
         }
 
         mAdapter = UserOrderAdapter((requireContext()), listener)

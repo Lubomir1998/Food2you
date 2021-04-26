@@ -3,7 +3,6 @@ package com.example.food2you.ui
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -15,7 +14,6 @@ import com.example.food2you.R
 import com.example.food2you.Repository
 import com.example.food2you.data.remote.UserToken
 import com.example.food2you.other.BasicAuthInterceptor
-import com.example.food2you.other.Constants
 import com.example.food2you.other.Constants.Add_Preview_Action
 import com.example.food2you.other.Constants.KEY_EMAIL
 import com.example.food2you.other.Constants.KEY_PASSWORD

@@ -21,6 +21,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.food2you.R
 import com.example.food2you.adapters.OrderAdapter
+import com.example.food2you.adapters.formattedStringPrice
 import com.example.food2you.data.remote.NotificationData
 import com.example.food2you.data.remote.PushNotification
 import com.example.food2you.data.remote.models.FoodItem
@@ -294,7 +295,7 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
 
             binding.remainingSumTv.text = (args.minimumPrice - orderPrice).toBigDecimal().setScale(2, RoundingMode.FLOOR).toString() + " €"
             binding.messageTv.text =
-                    "You can't order. ${args.restaurantName} delivers food for a minimum of ${orderAdapter.formattedStringPrice(args.minimumPrice.toString())}€ without the price of the delivery."
+                    "You can't order. ${args.restaurantName} delivers food for a minimum of ${formattedStringPrice(args.minimumPrice.toString())}€ without the price of the delivery."
 
         }
         else {
@@ -316,15 +317,15 @@ class OrderFragment: Fragment(R.layout.order_fragment) {
 
     @SuppressLint("SetTextI18n")
     private fun showPrices(orderPrice: String, deliveryPrice: Float) {
-        binding.totalPriceTv.text = orderAdapter.formattedStringPrice(orderPrice) + " €"
+        binding.totalPriceTv.text = formattedStringPrice(orderPrice) + " €"
         binding.deliveryPriceTv.text = if(deliveryPrice > 0) {
-            orderAdapter.formattedStringPrice(deliveryPrice.toString()) + " €"
+            formattedStringPrice(deliveryPrice.toString()) + " €"
         }
         else {
             "FREE"
         }
         val total = orderPrice.toFloat() + args.deliveryPrice
-        binding.totalTv.text = orderAdapter.formattedStringPrice(total.toString()) + " €"
+        binding.totalTv.text = formattedStringPrice(total.toString()) + " €"
     }
 
     private fun displayData(list: List<FoodItem>) {

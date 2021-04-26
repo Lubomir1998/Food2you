@@ -55,4 +55,7 @@ interface ApiService {
     @POST("/changeOrderRecipientToken/{token}")
     suspend fun changeOrderRecipientToken(@Path("token") token: String): Response<SimpleResponse>
 
+    @GET("/getTrack/{order}")
+    suspend fun getTrack(@Path("order") orderId: String): Response<Track>
+
 }

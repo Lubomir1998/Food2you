@@ -61,10 +61,18 @@ class UserOrderAdapter(val context: Context, val listener: OnOrderClickListener)
                 View.GONE
             }
 
+            trackBtn.visibility = if(order.status == "On the way") {
+                View.VISIBLE
+            }
+            else {
+                View.GONE
+            }
+
             restaurantNameTv.text = order.restaurantName
 
             onOrderClicked(listener, order)
             onUpdateBtnClicked(listener, order)
+            onTrackBtnClicked(listener, order)
         }
 
 
@@ -74,23 +82,6 @@ class UserOrderAdapter(val context: Context, val listener: OnOrderClickListener)
     override fun getItemCount(): Int = orders.size
 
 
-//    fun formattedStringPrice(price: String): String {
-//
-//        val stotinki: String
-//
-//        if(price.contains(".")) {
-//            val leva = price.split(".")[0]
-//            stotinki = price.split(".")[1]
-//
-//            if(stotinki.length == 1) {
-//                return "${leva}.${stotinki}0"
-//            }
-//            return price
-//        }
-//
-//        return "${price}.00"
-//    }
-
     class MyViewHolder(itemView: MyOrderItemBinding): RecyclerView.ViewHolder(itemView.root) {
         val resImage = itemView.logoImg
         val restaurantNameTv = itemView.resTitleTextView
@@ -98,6 +89,7 @@ class UserOrderAdapter(val context: Context, val listener: OnOrderClickListener)
         val addressTv = itemView.addressTextView
         val priceTv = itemView.totalPriceTextView
         val updateBtn = itemView.updateBtn
+        val trackBtn = itemView.btnTrack
 
         fun onOrderClicked(listener: OnOrderClickListener, order: Order) {
             itemView.setOnClickListener {
@@ -111,6 +103,12 @@ class UserOrderAdapter(val context: Context, val listener: OnOrderClickListener)
             }
         }
 
+        fun onTrackBtnClicked(listener: OnOrderClickListener, order: Order) {
+            trackBtn.setOnClickListener {
+                listener.onTrackButtonClicked(order)
+            }
+        }
+
     }
 
 
@@ -118,5 +116,6 @@ class UserOrderAdapter(val context: Context, val listener: OnOrderClickListener)
     interface OnOrderClickListener {
         fun onOrderClicked(order: Order)
         fun onUpdateButtonClicked(order: Order)
+        fun onTrackButtonClicked(order: Order)
     }
 }

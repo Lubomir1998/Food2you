@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Food2you</string>
+    <string name="google_maps_key">aaaaa</string>
 </resources>

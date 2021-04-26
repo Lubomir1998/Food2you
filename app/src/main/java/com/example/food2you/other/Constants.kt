@@ -1,5 +1,6 @@
 package com.example.food2you.other
 
+import android.Manifest
 import com.example.food2you.BuildConfig
 
 object Constants {
@@ -28,5 +29,9 @@ object Constants {
     const val CONTENT_TYPE = "application/json"
 
     const val CHANNEL_ID = "CHANNEL_ID"
+
+    const val LOCATION_PERMISSION_REQUEST_CODE = 1
+    const val FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION
+    const val COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION
 
 }

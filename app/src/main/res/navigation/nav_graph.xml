@@ -198,5 +198,16 @@
         <action
             android:id="@+id/action_allOrdersFragment_to_detailRestaurantFragment"
             app:destination="@id/detailRestaurantFragment" />
+        <action
+            android:id="@+id/action_allOrdersFragment_to_trackOrderFragment"
+            app:destination="@id/trackOrderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/trackOrderFragment"
+        android:name="com.example.food2you.ui.TrackOrderFragment"
+        android:label="TrackOrderFragment" >
+        <argument
+            android:name="orderId"
+            app:argType="string" />
     </fragment>
 </navigation>

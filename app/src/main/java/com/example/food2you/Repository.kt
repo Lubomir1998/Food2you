@@ -1,15 +1,11 @@
 package com.example.food2you
 
 import android.app.Application
-import android.util.Log
 import com.example.food2you.data.local.ResDao
 import com.example.food2you.data.local.entities.Food
 import com.example.food2you.data.remote.models.Order
 import com.example.food2you.data.local.entities.Restaurant
-import com.example.food2you.data.remote.ApiService
-import com.example.food2you.data.remote.FirebaseApi
-import com.example.food2you.data.remote.PushNotification
-import com.example.food2you.data.remote.UserToken
+import com.example.food2you.data.remote.*
 import com.example.food2you.data.remote.requests.AccountRequest
 import com.example.food2you.data.remote.requests.AddPreviewRequest
 import com.example.food2you.data.remote.requests.LikeRestaurantRequest
@@ -19,6 +15,7 @@ import com.example.food2you.other.hasInternetConnection
 import com.example.food2you.other.networkBoundResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import javax.inject.Inject
@@ -258,6 +255,16 @@ class Repository
     suspend fun getAllWaitingOrdersForUser() = api.getAllWaitingOrdersForUser()
 
     suspend fun changeRecipientToken(token: String) = api.changeOrderRecipientToken(token)
+
+    suspend fun getTrack(orderId: String): Flow<Track> {
+        val response = api.getTrack(orderId)
+
+        return flow {
+            if(response.isSuccessful && response.body() != null) {
+                emit(api.getTrack(orderId).body()!!)
+            }
+        }
+    }
 
 
     // Firebase stuff
